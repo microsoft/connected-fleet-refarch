@@ -1,0 +1,86 @@
+[
+    {
+      "name": "EventEntity_EntityName",
+      "value": "msauto_deviceevent"
+    },
+    {
+      "name": "EventEntity_Driver",
+      "value": "msauto_driverid"
+    },
+    {
+      "name": "EventEntity_Device",
+      "value": "msauto_deviceid"
+    },
+    {
+      "name": "EventEntity_EventType",
+      "value": "msauto_deviceeventtypeid"
+    },
+    {
+      "name": "EventEntity_EventTime",
+      "value": "msauto_eventdatetime"
+    },
+    {
+      "name": "EventEntity_EventData",
+      "value": "msauto_eventdataid"
+    },
+    {
+      "name": "EventEntity_AdditionalProperties",
+      "value": "msauto_additionalproperties"
+    },
+    {
+      "name": "EventEntity_EventDetails",
+      "value": "msauto_eventdetails"
+    },
+    {
+      "name": "EventType_EntityName",
+      "value": "msauto_deviceeventtype"
+    },
+    {
+      "name": "EventType_QueryColumn",
+      "value": "msauto_eventtypename"
+    },
+    {
+      "name": "EventType_EntityKey",
+      "value": "msauto_deviceeventtypeid"
+    },
+    {
+      "name": "Device_EntityName",
+      "value": "msauto_device"
+    },
+    {
+      "name": "Device_QueryColumn",
+      "value": "msauto_name"
+    },
+    {
+      "name": "Device_EntityKey",
+      "value": "msauto_deviceid"
+    },
+    {
+      "name": "Driver_EntityName",
+      "value": "msauto_driver"
+    },
+    {
+      "name": "Driver_Name",
+      "value": "msauto_drivername"
+    },
+    {
+      "name": "Driver_QueryColumn",
+      "value": "msauto_driverexternalid"
+    },
+    {
+      "name": "Driver_EntityKey",
+      "value": "msauto_driverid"
+    },
+    {
+      "name": "DataVerse_Secret",
+      "value": "<yourdataverse_secret>"
+    },
+    {
+      "name": "DataVerse_AppId",
+      "value": "<yourdataverse_appid>"
+    },
+    {
+      "name": "DataVerse_Uri",
+      "value": "<yourdataverse_uri>"
+    }
+]

@@ -1,0 +1,15 @@
+{
+    "state": "Enabled",
+    "authentication": {
+        "certificateSubject": {
+            "commonName": "device02.mqtt.contoso.com",
+            "organization": "Contoso",
+            "organizationUnit": "IoT",
+            "countryCode": "US"
+        }
+    },
+    "attributes": {
+        "type": "vehicle"
+    },
+    "description": "This is a test device"
+}

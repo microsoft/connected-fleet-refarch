@@ -1,0 +1,7 @@
+{
+    "topicTemplates": [
+        "+/vehiclestatus",
+        "+/vehicleevent"
+    ],
+    "subscriptionSupport": "LowFanout"
+}

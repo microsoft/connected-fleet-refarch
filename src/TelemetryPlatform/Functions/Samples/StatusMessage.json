@@ -1,0 +1,26 @@
+{
+    "values": [
+        {
+            "path": "Vehicle.Drivetrain.Transmission.FuelLevel",
+            "dp": [
+                {
+                    "value": "50", 
+                    "ts": "2020-04-15T13:37:00Z"
+                },
+                {
+                    "value": "60", 
+                    "ts": "2020-04-15T13:27:00Z"
+                }
+            ]
+        },
+        {
+            "path": "Vehicle.Drivetrain.Transmission.PerformanceMode",
+            "dp": [
+                {
+                    "value": "sport", 
+                    "ts": "2020-04-15T13:37:00Z"
+                }
+            ]            
+        }      
+    ]
+  }

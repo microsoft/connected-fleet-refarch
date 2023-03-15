@@ -1,0 +1,3 @@
+{
+    "encodedCertificate": "-----BEGIN CERTIFICATE-----\n<<ca-cert-pem-content>>\n-----END CERTIFICATE-----"
+}

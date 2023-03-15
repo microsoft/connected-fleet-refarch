@@ -1,0 +1,42 @@
+.create table RawVehicleStatus (
+  vehicleId:string,
+  timestamp:datetime,
+  schemaVersion:string,
+  geoLocation:dynamic,
+  eventId:string,
+  signals:dynamic,
+  extendedProperties: dynamic,
+  additionalProperties: dynamic
+  )
+
+
+.create table VehicleStatus (
+  vehicleId:string,
+  timestamp:datetime,
+  schemaVersion:string,
+  geoLocation:dynamic,
+  eventId:string,
+  signal:string,
+  signalValue:string,
+  extendedProperties: dynamic,
+  additionalProperties: dynamic
+  )
+
+.create function VehicleStatusExpand() {
+    RawVehicleStatus
+    | mv-expand allsignals = signals
+    | project
+        vehicleId,
+        timestamp,
+        schemaVersion,
+        geoLocation,
+        eventId,
+        signal = tostring(allsignals.name),
+        signalValue = tostring(allsignals.value),
+        extendedProperties,
+        additionalProperties
+}
+
+.alter table VehicleStatus policy update @'[{"Source": "RawVehicleStatus", "Query": "VehicleStatusExpand()", "IsEnabled": "True", "IsTransactional": true }]'
+
+.alter-merge table RawVehicleStatus policy retention softdelete = 0s

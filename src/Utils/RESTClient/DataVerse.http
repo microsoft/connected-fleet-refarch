@@ -1,0 +1,895 @@
+### Dynamics CRM Prequisties ###
+# 1. Setup a dataverse environment
+# 2. Import that Microsoft Common Data Model for Automotive Solution from GitHub
+#    https://github.com/microsoft/Industry-Accelerator-Automotive/releases
+################################
+
+### VS Code Prequisites ###
+# 1. Install REST Client extension
+# 2. Configure REST Client in Preferences -> Settings -> Extensions -> REST Cllient
+# 3. Under Environment Variables, click "Edit it settings.json"
+# 4. Configure the environment variables replacing the token parameters with your enviornment settings
+#    "rest-client.environmentVariables": {
+#        "$shared": {},
+#        "fleetdev": {
+#            "organizationUri": "https://<orgname>.crm4.dynamics.com",
+#            "solutionName": "MicrosoftCommonDataModelforAutomotive",
+#            "clientId": "<clientId>",
+#            "clientSecret": "<clientSecret>",
+#            "scope": "https://<orgname>.crm4.dynamics.com/.default",
+#            "tenantId": "<aadTenantId>"
+#        }
+#    }
+# 5. In the bottom right corner of VS Code, select the "fleetdev" environment (or whatever name you gave it)
+##################
+
+#---------------------------------------------------------------------------------------------------------------------
+### Get Bearer Token
+# @name BearerToken
+POST https://login.microsoftonline.com/{{tenantId}}/oauth2/v2.0/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+&client_id={{clientId}}
+&client_secret={{clientSecret}}
+&scope={{scope}}
+
+###
+
+#---------------------------------------------------------------------------------------------------------------------
+### Retrieve Bearer Token
+@bearerToken = {{BearerToken.response.body.$.access_token}}
+
+POST {{organizationUri}}/api/data/v9.2/CanBeReferenced HTTP/1.1
+OData-MaxVersion: 4.0
+OData-Version: 4.0
+If-None-Match: null
+Accept: application/json
+Content-Type: application/json; charset=utf-8 
+Authorization: Bearer {{bearerToken}}
+
+{
+"EntityName": "msauto_driver"
+}
+
+
+
+#---------------------------------------------------------------------------------------------------------------------
+### Create Driver Entity
+# @name CreateDriverEntity
+POST {{organizationUri}}/api/data/v9.0/EntityDefinitions 
+MSCRM.SolutionUniqueName: {{solutionName}}
+Accept: application/json  
+Content-Type: application/json; charset=utf-8  
+OData-MaxVersion: 4.0  
+OData-Version: 4.0  
+Authorization: Bearer {{bearerToken}}
+  
+{  
+  "@odata.type": "Microsoft.Dynamics.CRM.EntityMetadata",  
+ "Attributes": [  
+  {  
+   "AttributeType": "String",  
+   "AttributeTypeName": {  
+    "Value": "StringType"  
+   },  
+   "Description": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "The name of the Driver",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "DisplayName": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "Driver Name",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "IsPrimaryName": true,  
+   "RequiredLevel": {  
+    "Value": "None",  
+    "CanBeChanged": true,  
+    "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"  
+   },  
+   "SchemaName": "msauto_drivername",  
+    "@odata.type": "Microsoft.Dynamics.CRM.StringAttributeMetadata",  
+   "FormatName": {  
+    "Value": "Text"  
+   },  
+   "MaxLength": 100  
+  } ,
+
+
+{  
+   "AttributeType": "String",  
+   "AttributeTypeName": {  
+    "Value": "firstName"  
+   },  
+   "Description": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "The first name of the Driver",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "DisplayName": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "Driver First Name",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "IsPrimaryName": false,  
+   "RequiredLevel": {  
+    "Value": "None",  
+    "CanBeChanged": true,  
+    "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"  
+   },  
+   "SchemaName": "msauto_driverfirstname",  
+    "@odata.type": "Microsoft.Dynamics.CRM.StringAttributeMetadata",  
+   "FormatName": {  
+    "Value": "Text"  
+   },  
+   "MaxLength": 100  
+  },
+
+
+  {  
+   "AttributeType": "String",  
+   "AttributeTypeName": {  
+    "Value": "lastName"  
+   },  
+   "Description": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "The last name of the Driver",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "DisplayName": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "Driver Last Name",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "IsPrimaryName": false,  
+   "RequiredLevel": {  
+    "Value": "None",  
+    "CanBeChanged": true,  
+    "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"  
+   },  
+   "SchemaName": "msauto_driverlastname",  
+    "@odata.type": "Microsoft.Dynamics.CRM.StringAttributeMetadata",  
+   "FormatName": {  
+    "Value": "Text"  
+   },  
+   "MaxLength": 100  
+  },
+
+  {  
+   "AttributeType": "String",  
+   "AttributeTypeName": {  
+    "Value": "externaldriverid"  
+   },  
+   "Description": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "The External unique identifier of the Driver",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "DisplayName": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "External Driver ID",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "IsPrimaryName": false,  
+   "RequiredLevel": {  
+    "Value": "None",  
+    "CanBeChanged": true,  
+    "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"  
+   },  
+   "SchemaName": "msauto_driverexternalid",  
+    "@odata.type": "Microsoft.Dynamics.CRM.StringAttributeMetadata",  
+   "FormatName": {  
+    "Value": "Text"  
+   },  
+   "MaxLength": 100  
+  }      
+
+
+ ],  
+ "Description": {  
+   "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+  "LocalizedLabels": [  
+   {  
+     "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+    "Label": "An entity to store driver information",  
+    "LanguageCode": 1033  
+   }  
+  ]  
+ },  
+ "DisplayCollectionName": {  
+   "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+  "LocalizedLabels": [  
+   {  
+     "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+    "Label": "Drivers",  
+    "LanguageCode": 1033  
+   }  
+  ]  
+ },  
+ "DisplayName": {  
+   "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+  "LocalizedLabels": [  
+   {  
+     "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+    "Label": "Driver",  
+    "LanguageCode": 1033  
+   }  
+  ]  
+ },  
+ "HasActivities": false,  
+ "HasNotes": false,  
+ "IsActivity": false,  
+ "OwnershipType": "UserOwned",  
+ "SchemaName": "msauto_driver"
+}
+
+
+#---------------------------------------------------------------------------------------------------------------------
+### Create Device Event Type
+# @name CreateDeviceEventTypeEntity
+POST {{organizationUri}}/api/data/v9.0/EntityDefinitions 
+MSCRM.SolutionUniqueName: {{solutionName}}
+Accept: application/json  
+Content-Type: application/json; charset=utf-8  
+OData-MaxVersion: 4.0  
+OData-Version: 4.0  
+Authorization: Bearer {{bearerToken}}
+  
+{  
+  "@odata.type": "Microsoft.Dynamics.CRM.EntityMetadata",  
+ "Attributes": [  
+  {  
+   "AttributeType": "String",  
+   "AttributeTypeName": {  
+    "Value": "StringType"  
+   },  
+   "Description": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "Name of the Event Type",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "DisplayName": {  
+     "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+    "LocalizedLabels": [  
+     {  
+       "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+      "Label": "Event Type Name",  
+      "LanguageCode": 1033  
+     }  
+    ]  
+   },  
+   "IsPrimaryName": true,  
+   "RequiredLevel": {  
+    "Value": "None",  
+    "CanBeChanged": true,  
+    "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"  
+   },  
+   "SchemaName": "msauto_eventtypename",  
+    "@odata.type": "Microsoft.Dynamics.CRM.StringAttributeMetadata",  
+   "FormatName": {  
+    "Value": "Text"  
+   },  
+   "MaxLength": 100  
+  }
+
+ ],  
+ "Description": {  
+   "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+  "LocalizedLabels": [  
+   {  
+     "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+    "Label": "An entity to store device event types",  
+    "LanguageCode": 1033  
+   }  
+  ]  
+ },  
+ "DisplayCollectionName": {  
+   "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+  "LocalizedLabels": [  
+   {  
+     "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+    "Label": "Device Event Types",  
+    "LanguageCode": 1033  
+   }  
+  ]  
+ },  
+ "DisplayName": {  
+   "@odata.type": "Microsoft.Dynamics.CRM.Label",  
+  "LocalizedLabels": [  
+   {  
+     "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",  
+    "Label": "Device Event Type",  
+    "LanguageCode": 1033  
+   }  
+  ]  
+ },  
+ "HasActivities": false,  
+ "HasNotes": false,  
+ "IsActivity": false,  
+ "OwnershipType": "UserOwned",  
+ "SchemaName": "msauto_deviceeventtype"
+}
+
+
+#---------------------------------------------------------------------------------------------------------------------
+### Create Device Event Entity
+# @name CreateDeviceEventEntity
+POST {{organizationUri}}/api/data/v9.0/EntityDefinitions 
+MSCRM.SolutionUniqueName: {{solutionName}}
+Accept: application/json  
+Content-Type: application/json; charset=utf-8  
+OData-MaxVersion: 4.0  
+OData-Version: 4.0  
+Authorization: Bearer {{bearerToken}}
+  
+{
+  "@odata.type": "Microsoft.Dynamics.CRM.EntityMetadata",
+  "Attributes": [
+    {
+      "AttributeType": "String",
+      "AttributeTypeName": {
+        "Value": "StringType"
+      },
+      "Description": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Name of the Event",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "DisplayName": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Event Name",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "IsPrimaryName": true,
+      "RequiredLevel": {
+        "Value": "None",
+        "CanBeChanged": true,
+        "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"
+      },
+      "SchemaName": "msauto_eventname",
+      "@odata.type": "Microsoft.Dynamics.CRM.StringAttributeMetadata",
+      "FormatName": {
+        "Value": "Text"
+      },
+      "MaxLength": 100
+    },
+    {
+      "AttributeType": "String",
+      "AttributeTypeName": {
+        "Value": "StringType"
+      },
+      "Description": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Event Data ID",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "DisplayName": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Event Data ID",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "IsPrimaryName": false,
+      "RequiredLevel": {
+        "Value": "None",
+        "CanBeChanged": true,
+        "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"
+      },
+      "SchemaName": "msauto_eventdataid",
+      "@odata.type": "Microsoft.Dynamics.CRM.StringAttributeMetadata",
+      "FormatName": {
+        "Value": "Text"
+      },
+      "MaxLength": 100
+    },
+    {
+      "@odata.type": "Microsoft.Dynamics.CRM.DateTimeAttributeMetadata",
+      "AttributeType": "DateTime",
+      "AttributeTypeName": {
+        "Value": "DateTimeType"
+      },
+      "Description": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Event Date",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "DisplayName": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Event Date",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "RequiredLevel": {
+        "Value": "None",
+        "CanBeChanged": true,
+        "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"
+      },
+      "SchemaName": "msauto_eventdatetime",
+      "Format": "DateAndTime"
+    },
+    {
+      "@odata.type": "Microsoft.Dynamics.CRM.MemoAttributeMetadata",
+      "AttributeType": "Memo",
+      "AttributeTypeName": {
+        "Value": "MemoType"
+      },
+      "Description": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Additional Properties",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "DisplayName": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Additional Properties",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "RequiredLevel": {
+        "Value": "None",
+        "CanBeChanged": true,
+        "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"
+      },
+      "SchemaName": "msauto_additionalproperties",
+      "Format": "TextArea",
+      "MaxLength": 4000
+    },
+    {
+      "@odata.type": "Microsoft.Dynamics.CRM.MemoAttributeMetadata",
+      "AttributeType": "Memo",
+      "AttributeTypeName": {
+        "Value": "MemoType"
+      },
+      "Description": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Event Details",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "DisplayName": {
+        "@odata.type": "Microsoft.Dynamics.CRM.Label",
+        "LocalizedLabels": [
+          {
+            "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+            "Label": "Event Details",
+            "LanguageCode": 1033
+          }
+        ]
+      },
+      "RequiredLevel": {
+        "Value": "None",
+        "CanBeChanged": true,
+        "ManagedPropertyLogicalName": "canmodifyrequirementlevelsettings"
+      },
+      "SchemaName": "msauto_eventdetails",
+      "Format": "TextArea",
+      "MaxLength": 4000
+    }
+  ],
+  "Description": {
+    "@odata.type": "Microsoft.Dynamics.CRM.Label",
+    "LocalizedLabels": [
+      {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "An entity to store device events",
+        "LanguageCode": 1033
+      }
+    ]
+  },
+  "DisplayCollectionName": {
+    "@odata.type": "Microsoft.Dynamics.CRM.Label",
+    "LocalizedLabels": [
+      {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Device Events",
+        "LanguageCode": 1033
+      }
+    ]
+  },
+  "DisplayName": {
+    "@odata.type": "Microsoft.Dynamics.CRM.Label",
+    "LocalizedLabels": [
+      {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Device Event",
+        "LanguageCode": 1033
+      }
+    ]
+  },
+  "HasActivities": false,
+  "HasNotes": false,
+  "IsActivity": false,
+  "OwnershipType": "UserOwned",
+  "SchemaName": "msauto_deviceevent"
+}
+
+### Create 1:Many relationship to event types
+# @name CreateEventToEventTypeRelationship
+POST {{organizationUri}}/api/data/v9.2/RelationshipDefinitions HTTP/1.1
+MSCRM.SolutionUniqueName: {{solutionName}}
+OData-MaxVersion: 4.0
+OData-Version: 4.0
+If-None-Match: null
+Accept: application/json
+Content-Type: application/json; charset=utf-8  
+Authorization: Bearer {{bearerToken}}
+
+{
+  "@odata.type": "Microsoft.Dynamics.CRM.OneToManyRelationshipMetadata",
+  "AssociatedMenuConfiguration": {
+    "Behavior": "UseLabel",
+    "Group": "Details",
+    "Label": {
+      "@odata.type": "Microsoft.Dynamics.CRM.Label",
+      "LocalizedLabels": [
+        {
+          "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+          "Label": "Events",
+          "LanguageCode": 1033,
+          "IsManaged": false
+        }
+      ],
+      "UserLocalizedLabel": {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Events",
+        "LanguageCode": 1033,
+        "IsManaged": false
+      }
+    },
+    "Order": 10000,
+    "ViewId": "00000000-0000-0000-0000-000000000000"
+  },
+  "CascadeConfiguration": {
+    "Assign": "NoCascade",
+    "Delete": "RemoveLink",
+    "Merge": "Cascade",
+    "Reparent": "NoCascade",
+    "Share": "NoCascade",
+    "Unshare": "NoCascade",
+    "RollupView": "NoCascade"
+  },
+  "IsHierarchical": false,
+  "ReferencedAttribute": "msauto_deviceeventtypeid",
+  "ReferencedEntity": "msauto_deviceeventtype",
+  "ReferencingEntity": "msauto_deviceevent",
+  "Lookup": {
+    "@odata.type": "Microsoft.Dynamics.CRM.LookupAttributeMetadata",
+    "AttributeType": "Lookup",
+    "AttributeTypeName": {
+      "Value": "LookupType"
+    },
+    "Format": "None",
+    "Description": {
+      "@odata.type": "Microsoft.Dynamics.CRM.Label",
+      "LocalizedLabels": [
+        {
+          "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+          "Label": "Event Type",
+          "LanguageCode": 1033,
+          "IsManaged": false
+        }
+      ],
+      "UserLocalizedLabel": {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Event Type",
+        "LanguageCode": 1033,
+        "IsManaged": false
+      }
+    },
+    "DisplayName": {
+      "@odata.type": "Microsoft.Dynamics.CRM.Label",
+      "LocalizedLabels": [
+        {
+          "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+          "Label": "Event Type",
+          "LanguageCode": 1033,
+          "IsManaged": false
+        }
+      ],
+      "UserLocalizedLabel": {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Event Type",
+        "LanguageCode": 1033,
+        "IsManaged": false
+      }
+    },
+    "SchemaName": "msauto_deviceeventtypeid"
+  },
+  "IsCustomRelationship": false,
+  "IsManaged": false,
+  "IsValidForAdvancedFind": false,
+  "RelationshipType": "OneToManyRelationship",
+  "SchemaName": "msauto_deviceeventtype_deviceevent",
+  "SecurityTypes": "None"
+}
+
+
+### Create 1:Many relationship to driver
+# @name CreateEventToDriverRelationship
+POST {{organizationUri}}/api/data/v9.2/RelationshipDefinitions HTTP/1.1
+MSCRM.SolutionUniqueName: {{solutionName}}
+OData-MaxVersion: 4.0
+OData-Version: 4.0
+If-None-Match: null
+Accept: application/json
+Content-Type: application/json; charset=utf-8  
+Authorization: Bearer {{bearerToken}}
+
+{
+  "@odata.type": "Microsoft.Dynamics.CRM.OneToManyRelationshipMetadata",
+  "AssociatedMenuConfiguration": {
+    "Behavior": "UseLabel",
+    "Group": "Details",
+    "Label": {
+      "@odata.type": "Microsoft.Dynamics.CRM.Label",
+      "LocalizedLabels": [
+        {
+          "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+          "Label": "Driver",
+          "LanguageCode": 1033,
+          "IsManaged": false
+        }
+      ],
+      "UserLocalizedLabel": {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Driver",
+        "LanguageCode": 1033,
+        "IsManaged": false
+      }
+    },
+    "Order": 10000,
+    "ViewId": "00000000-0000-0000-0000-000000000000"
+  },
+  "CascadeConfiguration": {
+    "Assign": "NoCascade",
+    "Delete": "RemoveLink",
+    "Merge": "Cascade",
+    "Reparent": "NoCascade",
+    "Share": "NoCascade",
+    "Unshare": "NoCascade",
+    "RollupView": "NoCascade"
+  },
+  "IsHierarchical": false,
+  "ReferencedAttribute": "msauto_driverid",
+  "ReferencedEntity": "msauto_driver",
+  "ReferencingEntity": "msauto_deviceevent",
+  "Lookup": {
+    "@odata.type": "Microsoft.Dynamics.CRM.LookupAttributeMetadata",
+    "AttributeType": "Lookup",
+    "AttributeTypeName": {
+      "Value": "LookupType"
+    },
+    "Format": "None",
+    "Description": {
+      "@odata.type": "Microsoft.Dynamics.CRM.Label",
+      "LocalizedLabels": [
+        {
+          "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+          "Label": "Driver",
+          "LanguageCode": 1033,
+          "IsManaged": false
+        }
+      ],
+      "UserLocalizedLabel": {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Driver",
+        "LanguageCode": 1033,
+        "IsManaged": false
+      }
+    },
+    "DisplayName": {
+      "@odata.type": "Microsoft.Dynamics.CRM.Label",
+      "LocalizedLabels": [
+        {
+          "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+          "Label": "Driver",
+          "LanguageCode": 1033,
+          "IsManaged": false
+        }
+      ],
+      "UserLocalizedLabel": {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Driver",
+        "LanguageCode": 1033,
+        "IsManaged": false
+      }
+    },
+    "SchemaName": "msauto_driverid"
+  },
+  "IsCustomRelationship": false,
+  "IsManaged": false,
+  "IsValidForAdvancedFind": false,
+  "RelationshipType": "OneToManyRelationship",
+  "SchemaName": "msauto_driver_deviceevent",
+  "SecurityTypes": "None"
+}
+
+### Create 1:Many relationship to device
+# @name CreateEventToDeviceRelationship
+POST {{organizationUri}}/api/data/v9.2/RelationshipDefinitions HTTP/1.1
+MSCRM.SolutionUniqueName: {{solutionName}}
+OData-MaxVersion: 4.0
+OData-Version: 4.0
+If-None-Match: null
+Accept: application/json
+Content-Type: application/json; charset=utf-8  
+Authorization: Bearer {{bearerToken}}
+
+{
+  "@odata.type": "Microsoft.Dynamics.CRM.OneToManyRelationshipMetadata",
+  "AssociatedMenuConfiguration": {
+    "Behavior": "UseLabel",
+    "Group": "Details",
+    "Label": {
+      "@odata.type": "Microsoft.Dynamics.CRM.Label",
+      "LocalizedLabels": [
+        {
+          "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+          "Label": "Device",
+          "LanguageCode": 1033,
+          "IsManaged": false
+        }
+      ],
+      "UserLocalizedLabel": {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Device",
+        "LanguageCode": 1033,
+        "IsManaged": false
+      }
+    },
+    "Order": 10000,
+    "ViewId": "00000000-0000-0000-0000-000000000000"
+  },
+  "CascadeConfiguration": {
+    "Assign": "NoCascade",
+    "Delete": "RemoveLink",
+    "Merge": "Cascade",
+    "Reparent": "NoCascade",
+    "Share": "NoCascade",
+    "Unshare": "NoCascade",
+    "RollupView": "NoCascade"
+  },
+  "IsHierarchical": false,
+  "ReferencedAttribute": "msauto_deviceid",
+  "ReferencedEntity": "msauto_device",
+  "ReferencingEntity": "msauto_deviceevent",
+  "Lookup": {
+    "@odata.type": "Microsoft.Dynamics.CRM.LookupAttributeMetadata",
+    "AttributeType": "Lookup",
+    "AttributeTypeName": {
+      "Value": "LookupType"
+    },
+    "Format": "None",
+    "Description": {
+      "@odata.type": "Microsoft.Dynamics.CRM.Label",
+      "LocalizedLabels": [
+        {
+          "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+          "Label": "Device",
+          "LanguageCode": 1033,
+          "IsManaged": false
+        }
+      ],
+      "UserLocalizedLabel": {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Device",
+        "LanguageCode": 1033,
+        "IsManaged": false
+      }
+    },
+    "DisplayName": {
+      "@odata.type": "Microsoft.Dynamics.CRM.Label",
+      "LocalizedLabels": [
+        {
+          "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+          "Label": "Device",
+          "LanguageCode": 1033,
+          "IsManaged": false
+        }
+      ],
+      "UserLocalizedLabel": {
+        "@odata.type": "Microsoft.Dynamics.CRM.LocalizedLabel",
+        "Label": "Device",
+        "LanguageCode": 1033,
+        "IsManaged": false
+      }
+    },
+    "SchemaName": "msauto_deviceid"
+  },
+  "IsCustomRelationship": false,
+  "IsManaged": false,
+  "IsValidForAdvancedFind": false,
+  "RelationshipType": "OneToManyRelationship",
+  "SchemaName": "msauto_device_deviceevent",
+  "SecurityTypes": "None"
+}
+
+
+

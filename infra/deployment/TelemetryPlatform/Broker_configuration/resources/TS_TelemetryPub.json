@@ -1,0 +1,7 @@
+{
+    "topicTemplates": [
+        "${client.name}/vehiclestatus",
+        "${client.name}/vehicleevent"
+    ],
+    "subscriptionSupport": "NotSupported"
+}

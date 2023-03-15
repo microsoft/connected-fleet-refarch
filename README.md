@@ -1,14 +1,52 @@
-# Project
+# Microsoft Connected Fleet Reference Architecture 
+Welcome to the Microsoft Connected Fleet Reference Architecture.   The reference architecture is designed to demonstrate the integration from the vehicle through Azure & Dataverse with two main layers: the telemetry platform and the fleet integration layer:
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+<br/>
 
-As the maintainer of this project, please make a few updates:
+![](./docs/images//HighLevelArchitecture.png)
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+| Layer |  Description  |
+|---|---|
+| **Vehicle Connectivity**  | Connectivity between device to cloud is supported through various patterns incluing Eclipse SDV, Embeded Telematics Control Units and OBD-II dongles.   Typically, these vehicle devices commuicate to the cloud using MQTT and/or HTTPS.    |
+| **Mobility Services**  | The Mobility Serivces layers is responsible for handling hyper-scale secure connectivity, telemetry ingestion, command sending, etc. This layer handles everything from vehicle status updates to vehicle events, such as crashes, maintenance needs, and other critical events.  This layer also integrates with the Fleet Integration layer for communication into back-end services  |
+| **Line of Business Integration**  | This layer receives information via the Fleet Integration Layer and stores the information into Azure Synapse, Data Verse (using the Automotive Common Data Model) and can be extended using Dynamics 365 and/or Power Platform  |
+
+<br/>
+
+The initial release of the Connected Fleet Reference Architecture is focused on 3 key components:
+
+1. **Mobility Services Telemetry Platform** - a lightweight sample application to ingest MQTT data from the vehicle, parse and send to the Fleet Integration layer.   This sample is meant to be replaced with a fully functional Connected Vehicle/Fleet solution.
+
+1. **Fleet Integration** - The ability to standardize the import of vehicle telemetry and vehicle events into Azure Synapse and the Microsoft DataVerse. This integration enables seamless connectivity from the vehicle all the way to business integration, providing real-time insights into fleet performance and productivity.
+
+1. **Fleet Data Model** - An extension to the Automotive Common Data Model that includes new entities related to fleet operations.
+
+<br/>
+
+
+## Capabilities available in this preview
+This private preview provides the following capabilities
+- Mobility Services Telemetry Platform 
+    - Cloud based MQTT Broker 
+    - Azure Functions to receive device to cloud messages and send Vehicle Events and Vehicle Status updates to the Fleet Integration Layer
+    - BICEP script templates to create the dependent components Azure 
+- Fleet Integration Layer
+    - Event Hub to receive Vehicle Events and Vehicle Status updates
+    - Azure Function to connect into DataVerse and persist Vehicle Event Data
+    - Azure Data Explorer repository to save Vehicle Status updates and supporting Vehicle Event Data
+    - Azure Data Explorer Ingestion Function to parse incoming event hub data and persist into tables
+    - BICEP script templates to create the dependent components Azure 
+- Fleet Data Model
+    - A set of REST API calls to create the necessary tables in the DataVerse (NOTE: This is only necessary until an upcoming version of the Automotive Common Data Model is available)
+
+
+<br/>
+
+## Getting Started
+To get started, please referring to the [Getting Started](./docs/GettingStarted.md) guide.
+
+
+<br/>
 
 ## Contributing
 
@@ -23,6 +61,8 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+<br />
 
 ## Trademarks
 

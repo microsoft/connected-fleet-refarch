@@ -1,0 +1,5 @@
+{
+    "clientGroupName":"allvehicles",
+    "topicSpaceName":"telemetrypub",
+    "permission":"Publisher"
+}
