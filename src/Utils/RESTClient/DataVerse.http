@@ -6,7 +6,7 @@
 
 ### VS Code Prequisites ###
 # 1. Install REST Client extension
-# 2. Configure REST Client in Preferences -> Settings -> Extensions -> REST Cllient
+# 2. Configure REST Client in Preferences -> Settings -> Extensions -> REST Client
 # 3. Under Environment Variables, click "Edit it settings.json"
 # 4. Configure the environment variables replacing the token parameters with your enviornment settings
 #    "rest-client.environmentVariables": {
