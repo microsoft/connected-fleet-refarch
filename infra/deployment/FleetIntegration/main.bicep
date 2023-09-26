@@ -2,14 +2,6 @@ param rgLocation string = resourceGroup().location
 
 var rgUniqueString = uniqueString(resourceGroup().id)
 
-// Create App Service Plan that will hold the Logic App
-// module appplan './AppServicePlan.bicep' = {
-//   name: 'AppServicePlanDeploy'
-//   params: {
-//     appServiceName: 'asp-${rgUniqueString}'
-//     location: rgLocation
-//   }
-// }
 
 // Create the App Insights and Ops Insights resources for monitoring
 module appinsights './AppInsights.bicep' = {
@@ -21,34 +13,6 @@ module appinsights './AppInsights.bicep' = {
    }
  }
  
-// Create a Storage Account
-// module stgModule './Storage.bicep' = {
-//   name: 'storageDeploy'
-//   params: {
-//     storageName: 'stg${rgUniqueString}'
-//     location: rgLocation
-//     fileShareName: 'la-${rgUniqueString}'
-//   }
-// }
-
-// Create the logic app host
-// module logicapp './LogicApp.bicep' = {
-//   name: 'logicappDeploy'
-//   params: {
-//     appServicePlanId: appplan.outputs.appServicePlanId
-//     logicAppName: 'logapp-${rgUniqueString}'
-//     location: rgLocation
-//     appInsightsEndpoint: appinsights.outputs.appInsightsEndpoint
-//     appInsightsInstrKey: appinsights.outputs.appInsightsInstrKey
-//     storageConnectionString: stgModule.outputs.storageConnectionString
-//   }
-//   dependsOn: [
-//     stgModule
-//     appplan
-//     appinsights
-//   ]
-// }
-
 module azurefunc './AzureFunction.bicep' = {
   name: 'azurefunc'
   params: {
