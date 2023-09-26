@@ -12,11 +12,16 @@
 - Install WSL2 in your Windows computer
 - Install dotnet in your WSL2 installation
 - Install Visual Studio Code
-- Check out the GitHub repository in your WSL
+- Check out the GitHub repository in your WSL environment
+
+``` bash
+git clone https://github.com/microsoft/connected-fleet-refarch.git
+```
+
 - Open Visual Studio Code from WSL using the argument
 
 ``` bash
-cd ~/<myprojectrepo>
+cd connected-fleet-refarch
 code .
 ```
 
@@ -32,8 +37,8 @@ dotnet build src/TelemetryPlatform/Functions/
     - [Azure Functions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions): quickly create, debug, manage, and deploy serverless apps directly from VS Code
     - [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client): to assist in updating
 - Follow the instructions to deploy the infrastructure for each layer
-    - [Telemetry Platform](infra/deployment/TelemetryPlatform/)
-    - [Fleet Integration](infra/deployment/TelemetryPlatform/)
+    - [Telemetry Platform](../infra/deployment/TelemetryPlatform/)
+    - [Fleet Integration](../infra/deployment/FleetIntegration/)
 
 - Deploy the Azure Functions
 - Use an MQTT Client to send test messages 
@@ -52,7 +57,7 @@ The Fleet Integration Layer has a dependency on the Microsoft Automotive Common 
 - Update the Azure Functions configuration settins
     - Replace all the instances of "msauto_" in the [FunctionsConfig.json](../src/FleetIntegration/Functions/FunctionsConfig.json) to use your namespace
     - Update the DataVerse AppId, Secret and URI
-    - Deploy the Functions COnfiguration by executing the following code
+    - Deploy the Functions Configuration by executing the following code
 
 ``` 
     az functionapp config appsettings set -g <resourceGroup> -n <funcApp> --settings @FunctionsConfig.json
