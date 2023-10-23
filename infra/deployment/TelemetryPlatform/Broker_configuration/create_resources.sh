@@ -32,20 +32,20 @@ echo "Namespace resource file updated."
 
 echo "Uploading ${ns_name} resources..."
 
-az resource create --resource-type ${base_type} --id ${resource_prefix} --is-full-object --api-version 2022-10-15-preview --properties @./resources/NS_CVBroker.json
-az resource create --resource-type ${base_type}/caCertificates --id ${resource_prefix}/caCertificates/test-ca-cert --api-version 2022-10-15-preview --properties @./resources/CAC_test-ca-cert.json
-az resource create --resource-type ${base_type}/topicSpaces --id ${resource_prefix}/topicSpaces/telemetrysub --api-version 2022-10-15-preview --properties @./resources/TS_TelemetrySub.json
-az resource create --resource-type ${base_type}/topicSpaces --id ${resource_prefix}/topicSpaces/telemetrypub --api-version 2022-10-15-preview --properties @./resources/TS_TelemetryPub.json
-az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device01 --api-version 2022-10-15-preview --properties @./resources/C_device01.json
-az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device02 --api-version 2022-10-15-preview --properties @./resources/C_device02.json
-az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device03 --api-version 2022-10-15-preview --properties @./resources/C_device03.json
-az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device04 --api-version 2022-10-15-preview --properties @./resources/C_device04.json
-az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device05 --api-version 2022-10-15-preview --properties @./resources/C_device05.json
-az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/service01 --api-version 2022-10-15-preview --properties @./resources/C_service01.json
-az resource create --resource-type ${base_type}/clientGroups --id ${resource_prefix}/clientGroups/allservices --api-version 2022-10-15-preview --properties @./resources/CG_allservices.json
-az resource create --resource-type ${base_type}/clientGroups --id ${resource_prefix}/clientGroups/allvehicles --api-version 2022-10-15-preview --properties @./resources/CG_allvehicles.json
-az resource create --resource-type ${base_type}/permissionBindings --id ${resource_prefix}/permissionBindings/sub-allservices --api-version 2022-10-15-preview --properties @./resources/PB_sub_allservices.json
-az resource create --resource-type ${base_type}/permissionBindings --id ${resource_prefix}/permissionBindings/pub-allvehicles --api-version 2022-10-15-preview --properties @./resources/PB_pub_allvehicles.json
+az resource create --resource-type ${base_type} --id ${resource_prefix} --is-full-object --api-version 2023-06-01-preview --properties @./resources/NS_CVBroker.json
+az resource create --resource-type ${base_type}/caCertificates --id ${resource_prefix}/caCertificates/test-ca-cert --api-version 2023-06-01-preview --properties @./resources/CAC_test-ca-cert.json
+az resource create --resource-type ${base_type}/topicSpaces --id ${resource_prefix}/topicSpaces/telemetrysub --api-version 2023-06-01-preview --properties @./resources/TS_TelemetrySub.json
+az resource create --resource-type ${base_type}/topicSpaces --id ${resource_prefix}/topicSpaces/telemetrypub --api-version 2023-06-01-preview --properties @./resources/TS_TelemetryPub.json
+az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device01 --api-version 2023-06-01-preview --properties @./resources/C_device01.json
+az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device02 --api-version 2023-06-01-preview --properties @./resources/C_device02.json
+az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device03 --api-version 2023-06-01-preview --properties @./resources/C_device03.json
+az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device04 --api-version 2023-06-01-preview --properties @./resources/C_device04.json
+az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/device05 --api-version 2023-06-01-preview --properties @./resources/C_device05.json
+az resource create --resource-type ${base_type}/clients --id ${resource_prefix}/clients/service01 --api-version 2023-06-01-preview --properties @./resources/C_service01.json
+az resource create --resource-type ${base_type}/clientGroups --id ${resource_prefix}/clientGroups/allservices --api-version 2023-06-01-preview --properties @./resources/CG_allservices.json
+az resource create --resource-type ${base_type}/clientGroups --id ${resource_prefix}/clientGroups/allvehicles --api-version 2023-06-01-preview --properties @./resources/CG_allvehicles.json
+az resource create --resource-type ${base_type}/permissionBindings --id ${resource_prefix}/permissionBindings/sub-allservices --api-version 2023-06-01-preview --properties @./resources/PB_sub_allservices.json
+az resource create --resource-type ${base_type}/permissionBindings --id ${resource_prefix}/permissionBindings/pub-allvehicles --api-version 2023-06-01-preview --properties @./resources/PB_pub_allvehicles.json
 
 echo "Resources uploaded."
 
