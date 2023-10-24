@@ -5,9 +5,7 @@
 3. Follow instructions in [Broker Configuration](./Broker_configuration/README.md)
 4. Execute the main BICEP script using the instructions below to deploy the resource using the resource group name from Step 1
 
-&nbsp;  
-
-# BICEP Instructions
+## BICEP Instructions
 
 Execute the main.bicep file using the syntax:
 
@@ -17,4 +15,6 @@ Execute the main.bicep file using the syntax:
 
 For example:
 
+``` bash
     az deployment group create --resource-group TelemetryDev --template-file ./main.bicep
+```
