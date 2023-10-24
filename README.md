@@ -19,20 +19,21 @@ The initial release of the Connected Fleet Reference Architecture is focused on 
 1. **Fleet Data Model** - An extension to the Automotive Common Data Model that includes new entities related to fleet operations.
 
 ## Capabilities available in this preview
+
 This private preview provides the following capabilities
 
-- Mobility Services Telemetry Platform 
-  - Cloud based MQTT Broker 
-  - Azure Functions to receive device to cloud messages and send Vehicle Events and Vehicle Status updates to the Fleet Integration Layer
-  - BICEP script templates to create the dependent components Azure 
-- Fleet Integration Layer
-  - Event Hub to receive Vehicle Events and Vehicle Status updates
-  - Azure Function to connect into DataVerse and persist Vehicle Event Data
-  - Azure Data Explorer repository to save Vehicle Status updates and supporting Vehicle Event Data
-  - Azure Data Explorer Ingestion Function to parse incoming event hub data and persist into tables
-  - BICEP script templates to create the dependent components Azure 
-- Fleet Data Model
-  - A set of REST API calls to create the necessary tables in the DataVerse (NOTE: This is only necessary until an upcoming version of the Automotive Common Data Model is available)
+- Mobility Services Telemetry Platform.
+  - Cloud based MQTT Broker.
+  - Azure Functions to receive device to cloud messages and send Vehicle Events and Vehicle Status updates to the Fleet Integration Layer.
+  - BICEP script templates to create the dependent components Azure.
+- Fleet Integration Layer.
+  - Event Hub to receive Vehicle Events and Vehicle Status updates.
+  - Azure Function to connect into DataVerse and persist Vehicle Event Data.
+  - Azure Data Explorer repository to save Vehicle Status updates and supporting Vehicle Event Data.
+  - Azure Data Explorer Ingestion Function to parse incoming event hub data and persist into tables.
+  - BICEP script templates to create the dependent components Azure.
+- Fleet Data Model.
+  - A set of REST API calls to create the necessary tables in the DataVerse (NOTE: This is only necessary until an upcoming version of the Automotive Common Data Model is available).
 
 ## Getting Started
 
