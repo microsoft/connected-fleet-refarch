@@ -2,6 +2,8 @@
 
 Follow these steps to configure the MQTT Broker
 
+1. Navigate to the Environment_configuration folder in your cloned repo through `cd ./infra/deployment/TelemetryPlatform/Broker_configuration/`
+
 1. Make the script is executable:
 
 ```bash
