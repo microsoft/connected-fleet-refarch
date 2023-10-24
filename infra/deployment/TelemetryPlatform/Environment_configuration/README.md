@@ -23,6 +23,7 @@ ad_username="<<your-email@domain.com>>"
 ```bash
 chmod 700 profile.sh
 chmod 700 setupEnv.sh
+chmod 700 ../cert-gen/certGen.sh
 ```
 
 1. Run the "profile.sh" script to set the common variables that will be used in the each scenario for deploying resources. Make sure you rerun  on every new shell window to set the right variables used in the scripts in the scenarios.
