@@ -11,7 +11,7 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 1. Navigate to the Environment_configuration folder in your cloned repo through `cd ./infra/deployment/TelemetryPlatform/Environment_configuration/`
 
 1. Update profile.sh file to specify your subscription id, resource group name and AAD email address.
-1. 
+
 ```bash
 sub_id="<<your-subscription-id>>"
 rg_name="<<your-resource-group-name>>"
