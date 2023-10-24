@@ -11,8 +11,10 @@
 
 Execute the main.bicep file using the syntax:
 
+``` bash
     az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
+```
 
 For example:
 
-    az deployment group create --resource-group TelemetryDev --template-file ./main.bicep  
+    az deployment group create --resource-group TelemetryDev --template-file ./main.bicep
