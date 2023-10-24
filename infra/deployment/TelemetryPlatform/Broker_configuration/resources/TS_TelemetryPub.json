@@ -1,7 +1,7 @@
 {
     "topicTemplates": [
-        "${client.name}/vehiclestatus",
-        "${client.name}/vehicleevent"
+        "${client.authenticationName}/vehiclestatus",
+        "${client.authenticationName}/vehicleevent"
     ],
     "subscriptionSupport": "NotSupported"
 }

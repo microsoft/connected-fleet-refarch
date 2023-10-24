@@ -1,5 +1,8 @@
 {
     "state": "Enabled",
+    "clientCertificateAuthentication": {
+        "validationScheme": "SubjectMatchesAuthenticationName"
+    },
     "authentication": {
         "certificateSubject": {
             "commonName": "device01.mqtt.contoso.com",
