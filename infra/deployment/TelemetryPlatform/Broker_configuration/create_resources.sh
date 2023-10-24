@@ -3,11 +3,11 @@
 ## Copyright (c) Microsoft. All rights reserved.
 ## Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-ns_name="<<your-namespace>>"
+ns_name="vehicletelemetry" #Replace by a custom name if desired
 resource_prefix="${ns_id_prefix}/${ns_name}"
-gw_url="${ns_name}.centraluseuap-1.ts.eventgrid.azure.net"
+gw_url="${ns_name}.${az_region}-1.ts.eventgrid.azure.net"
 
-eg_topic_name="<<your-topic-name>>"
+eg_topic_name="telemetryingestion" # Replace by a custom topic name if desired
 eg_topic_id="/subscriptions/${sub_id}/resourcegroups/${rg_name}/providers/Microsoft.EventGrid/topics/${eg_topic_name}"
 
 pushd ../cert-gen
