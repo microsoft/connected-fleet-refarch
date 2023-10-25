@@ -32,6 +32,12 @@ dotnet build src/FleetIntegration/Functions/
 dotnet build src/TelemetryPlatform/Functions/
 ```
 
+- From the terminal, build the Test Client
+
+``` bash
+dotnet build src/TestClient/
+```
+
 - Install the following extensions in Visual Studio Code
   - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep): Bicep language support for Visual Studio Code
   - [Azure Functions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions): quickly create, debug, manage, and deploy serverless apps directly from VS Code
@@ -41,7 +47,7 @@ dotnet build src/TelemetryPlatform/Functions/
   - [Fleet Integration](../infra/deployment/FleetIntegration/README.md)
 
 - Deploy the Azure Functions
-- Use an MQTT Client to send test messages 
+- Use an MQTT Client or the Test Client to send test messages 
 
 ## DataVerse
 

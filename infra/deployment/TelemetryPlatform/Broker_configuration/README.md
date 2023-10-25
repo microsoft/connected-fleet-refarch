@@ -14,7 +14,11 @@ chmod 700 create_resources.sh
 
 ```bash
 ns_name="vehicletelemetry" # Replace as desired
-eg_topic_name="telemetryingestion" # Repalce as desired
+eg_topic_name="telemetryingestion" # Replace as desired
 ```
 
 1. Run the "./create_resources.sh" script to create the device certificates and the MQTT broker configuration
+
+```bash
+./create_resources.sh
+```
