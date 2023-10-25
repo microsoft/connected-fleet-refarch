@@ -64,144 +64,101 @@ public class VehicleEventHandler
         }
 
         // Grab all the foreign keys necessary to create an event
-        Task<Guid> eventTask = LookupEventTypeId(vehicleEvent.EventSubType);
-        Task<Guid> deviceTask = LookupDeviceId(vehicleEvent.VehicleId);
-        Task<Guid> driverTask = LookupDriverId(vehicleEvent.DriverId);
+        Task<Guid> assetTask = UpsertAsset(vehicleEvent);
+        Task<Guid> deviceTask = UpsertIoTDevice(vehicleEvent);
         
-        await Task.WhenAll(eventTask, deviceTask, driverTask);
+        await Task.WhenAll(assetTask, deviceTask);
 
-        Guid eventTypeId = eventTask.Result;
+        Guid assetId = assetTask.Result;
         Guid deviceId = deviceTask.Result;
-        Guid driverId = driverTask.Result;
 
         // If any of the FKs are missing, exit
-        if (eventTypeId == Guid.Empty ||
-            deviceId == Guid.Empty ||
-            driverId == Guid.Empty)
+        if (assetId == Guid.Empty ||
+            deviceId == Guid.Empty)
         {
-            LogWarning("a453ed57-11f1-4c9a-9059-8f25b3632766", $"Failed to retrieve the required foreign keys");
+            LogWarning("7a8157c3-c1af-4435-8202-e59757abcc09", $"Failed to retrieve the required foreign keys");
             return;
         }
 
         try
         {
-            // Create Event Entity
-            Entity eventEntity = new Entity(Settings.EventEntityName);
-            eventEntity[Settings.EventEntityDriver] = new EntityReference(Settings.DriverEntityName, driverId);
-            eventEntity[Settings.EventEntityDevice] = new EntityReference(Settings.DeviceEntityName, deviceId);
-            eventEntity[Settings.EventEntityEventType] = new EntityReference(Settings.EventTypeEntityName, eventTypeId);
-            eventEntity[Settings.EventEntityEventTime] = vehicleEvent.Timestamp;
-            eventEntity[Settings.EventEntityEventData] = vehicleEvent.EventId;
-
-            if (vehicleEvent.AdditionalProperties != null)
-                eventEntity[Settings.EventEntityAdditionalProperties] = JsonConvert.SerializeObject(vehicleEvent.AdditionalProperties);
-
-            if (vehicleEvent.ExtendedProperties != null)
-                eventEntity[Settings.EventEntityEventDetails] = JsonConvert.SerializeObject(vehicleEvent.ExtendedProperties);
-
+            // Create IoT Alert Entity
+            Entity eventEntity = new Entity(Settings.IoTAlertEntityName);
+            eventEntity[Settings.IoTAlertEntityAsset] = new EntityReference(Settings.AssetEntityName, assetId);
+            eventEntity[Settings.IoTAlertEntityDevice] = new EntityReference(Settings.IoTDeviceEntityName, deviceId);
+            eventEntity[Settings.IoTAlertEntityAlertTime] = vehicleEvent.Timestamp;
+            eventEntity[Settings.IoTAlertEntityDescription] = $"{vehicleEvent.EventType} / {vehicleEvent.EventSubType}";
+            eventEntity[Settings.IoTAlertEntityAlertData] = JsonConvert.SerializeObject(vehicleEvent);
+                        
             Guid eventId = svc.Create(eventEntity);
-            LogInformation("55156ce9-d277-4566-8745-d80c8c0b90ac", $"Successfully created Event with DataVerse EventId: {eventId.ToString()}");
+            LogInformation("ece8b860-0523-4aea-bbde-45f79e903352", $"Successfully created IoT Alert with DataVerse EventId: {eventId.ToString()}");
         }
         catch (Exception ex)
         {
-            LogError(ex, "5f848711-a247-49bf-a789-243d7b9dc73f", "Failed to create Entity record");
+            LogError(ex, "7a8680f6-6f0b-4d4a-a3db-fd4d7ee127b8", "Failed to create IoT Alert record");
         }
     }
 
-    private async Task<Guid> LookupEventTypeId(string eventTypeName)
+    private async Task<Guid> UpsertAsset(VehicleEvent vehicleEvent)
     {
-        string entityName = Settings.EventTypeEntityName;
-        string queryColumn = Settings.EventTypeEntityQueryColumn;
-        string entityKey = Settings.EventTypeEntityKey;
+        string entityName = Settings.AssetEntityName;
+        string queryColumn = Settings.AssetEntityQueryColumn;
+        string entityKey = Settings.AssetEntityKey;
 
-        LogInformation("d85221cc-f14c-4718-937f-dc5d02f2bb44", $"Looking up Event SubType: {eventTypeName}");
-
-        if (string.IsNullOrEmpty(eventTypeName))
+        if (string.IsNullOrEmpty(vehicleEvent?.VehicleId))
         {
-            LogWarning("0206d81f-a62b-4734-acea-211db68ae072", "EventTypeName field is empty");
+            LogWarning("cf572643-2de5-457c-9ec9-acf010201184", "vehicleId field is empty");
             return Guid.Empty;
         }
 
-        Entity lookupEntity = await LookupEntity(entityName, queryColumn, eventTypeName, entityKey);
+        LogInformation("238115fb-bb6e-4fb8-933d-abaabf2724cd", $"Looking up asset: {vehicleEvent.VehicleId}");
+
+        Entity lookupEntity = await LookupEntity(entityName, queryColumn, vehicleEvent.VehicleId, entityKey);
 
         if (lookupEntity == null)
         {
-            LogWarning("307b1381-bf2c-419a-8c82-563dd76fc94c", $"Could not find Event SubType: {eventTypeName}, creating new entity.");
+            LogWarning("655b4b59-5dd8-4e32-9650-87608d258594", $"Could not find asset: {vehicleEvent.VehicleId}, creating new entity.");
 
             Entity eventTypeEntity = new Entity(entityName);
-            eventTypeEntity[queryColumn] = eventTypeName;
+            eventTypeEntity[queryColumn] = vehicleEvent.VehicleId;
 
             return svc.Create(eventTypeEntity);
         }
         else
         {
-            LogInformation("8ae3feb4-9912-4eb4-96ea-166badd92909", $"Found Event SubType: {eventTypeName} with ID: {lookupEntity.Id.ToString()}");
+            LogInformation("f583482e-0cb5-4a39-89b1-eeb85b1867ac", $"Found asset: {vehicleEvent.VehicleId} with ID: {lookupEntity.Id.ToString()}");
             return lookupEntity.Id;
         }
     }
 
-    private async Task<Guid> LookupDeviceId(string deviceId)
+    private async Task<Guid> UpsertIoTDevice(VehicleEvent vehicleEvent)
     {
-        string entityName = Settings.DeviceEntityName;
-        string queryColumn = Settings.DeviceEntityQueryColumn;
-        string entityKey = Settings.DeviceEntityKey;
+        string entityName = Settings.IoTDeviceEntityName;
+        string queryColumn = Settings.IoTDeviceEntityQueryColumn;
+        string entityKey = Settings.IoTDeviceEntityKey;
 
-        LogInformation("2ef53cf5-4d98-4eda-9b7f-2ca259583454", $"Looking up Device ID: {deviceId}");
-
-        if (string.IsNullOrEmpty(deviceId))
+        if (string.IsNullOrEmpty(vehicleEvent?.VehicleId))
         {
-            LogWarning("91a0f494-d0fc-4eb2-8161-8ce658e920f8", "DeviceId field is empty");
+            LogWarning("e84e1fff-c851-42cf-b11a-1468cc33e141", "vehicleId field is empty");
             return Guid.Empty;
         }
 
-        Entity lookupEntity = await LookupEntity(entityName, queryColumn, deviceId, entityKey);
+        LogInformation("8549ad66-b97e-434e-a0c9-206f84bea0f2", $"Looking up IoT Device: {vehicleEvent.VehicleId}");
+
+        Entity lookupEntity = await LookupEntity(entityName, queryColumn, vehicleEvent.VehicleId, entityKey);
 
         if (lookupEntity == null)
         {
-            LogWarning("260ca992-3384-41c6-b03e-b8ab16ad0de6", $"Could not find Device ID: {deviceId}, creating new entity.");
+            LogWarning("503a9820-41e9-40df-96b9-0c68437d19cb", $"Could not find IoT Device: {vehicleEvent.VehicleId}, creating new entity.");
 
-            Entity deviceEntity = new Entity(entityName);
-            deviceEntity[queryColumn] = deviceId;
+            Entity eventTypeEntity = new Entity(entityName);
+            eventTypeEntity[queryColumn] = vehicleEvent.VehicleId;
 
-            return svc.Create(deviceEntity);
+            return svc.Create(eventTypeEntity);
         }
         else
         {
-            LogInformation("d1162925-2c2d-4155-b781-97cb5fe209b1", $"Found Device ID: {deviceId} with ID: {lookupEntity.Id.ToString()}");
-            return lookupEntity.Id;
-        }
-    }
-
-    private async Task<Guid> LookupDriverId(string driverId)
-    {
-        string entityName = Settings.DriverEntityName;
-        string queryColumn = Settings.DriverEntityQueryColumn;
-        string entityKey = Settings.DriverEntityKey;
-        string driverName = Settings.DriverEntityDriverName;
-
-        LogInformation("3db379e4-7b99-43e8-8496-ae4ea5ee8ff4", $"Looking up Driver ID: {driverId}");
-
-        if (string.IsNullOrEmpty(driverId))
-        {
-            LogWarning("735ccaef-93e6-4d07-b5d2-7892b61f314e", "DriverId field is empty");
-            return Guid.Empty;
-        }
-
-        Entity lookupEntity = await LookupEntity(entityName, queryColumn, driverId, entityKey);
-
-        if (lookupEntity == null)
-        {
-            LogWarning("de14ab07-773a-4d39-8da1-c3988a2800e4", $"Could not find Driver ID: {driverId}, creating new entity.");
-
-            Entity driverEntity = new Entity(entityName);
-            driverEntity[queryColumn] = driverId;
-            driverEntity[driverName] = driverId;
-
-            return svc.Create(driverEntity);            
-        }
-        else
-        {
-            LogInformation("a7d5517f-b52a-4180-b3f7-3b66a6358335", $"Found Driver ID: {driverId} with ID: {lookupEntity.Id.ToString()}");
+            LogInformation("8aff87c1-a9d8-4102-943e-21f3390560f8", $"Found IoT Device: {vehicleEvent.VehicleId} with ID: {lookupEntity.Id.ToString()}");
             return lookupEntity.Id;
         }
     }
