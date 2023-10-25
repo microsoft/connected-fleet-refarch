@@ -1,4 +1,5 @@
 {
+    "authenticationName": "device04.mqtt.contoso.com",
     "state": "Enabled",
     "clientCertificateAuthentication": {
         "validationScheme": "SubjectMatchesAuthenticationName"
