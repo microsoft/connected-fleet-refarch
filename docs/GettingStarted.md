@@ -33,10 +33,10 @@ dotnet build src/TelemetryPlatform/Functions/
 ```
 
 - From the terminal, build the Test Client
-- 
+
 ``` bash
 dotnet build src/TestClient/
-`` 
+```
 
 - Install the following extensions in Visual Studio Code
   - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep): Bicep language support for Visual Studio Code

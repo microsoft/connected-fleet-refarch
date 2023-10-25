@@ -18,3 +18,7 @@ eg_topic_name="telemetryingestion" # Repalce as desired
 ```
 
 1. Run the "./create_resources.sh" script to create the device certificates and the MQTT broker configuration
+
+```bash
+./create_resources.sh
+```
