@@ -1,75 +1,51 @@
 [
     {
-      "name": "EventEntity_EntityName",
-      "value": "msauto_deviceevent"
+      "name": "AssetEntity_EntityName",
+      "value": "msdyn_customerasset"
     },
     {
-      "name": "EventEntity_Driver",
-      "value": "msauto_driverid"
+      "name": "AssetEntity_Name",
+      "value": "msdyn_name"
     },
     {
-      "name": "EventEntity_Device",
-      "value": "msauto_deviceid"
+      "name": "AssetEntity_CustomerAssetId",
+      "value": "msdyn_customerassetid"
     },
     {
-      "name": "EventEntity_EventType",
-      "value": "msauto_deviceeventtypeid"
+      "name": "IoTDeviceEntity_EntityName",
+      "value": "msdyn_iotdevice"
     },
     {
-      "name": "EventEntity_EventTime",
-      "value": "msauto_eventdatetime"
+      "name": "IoTDeviceEntity_Name",
+      "value": "msdyn_name"
     },
     {
-      "name": "EventEntity_EventData",
-      "value": "msauto_eventdataid"
+      "name": "IoTDeviceEntity_IoTDeviceId",
+      "value": "msdyn_iotdeviceid"
     },
     {
-      "name": "EventEntity_AdditionalProperties",
-      "value": "msauto_additionalproperties"
+      "name": "IoTAlertEntity_EntityName",
+      "value": "msdyn_iotalert"
     },
     {
-      "name": "EventEntity_EventDetails",
-      "value": "msauto_eventdetails"
+      "name": "IoTAlertEntity_Asset",
+      "value": "msdyn_customerasset"
     },
     {
-      "name": "EventType_EntityName",
-      "value": "msauto_deviceeventtype"
+      "name": "IoTAlertEntity_Device",
+      "value": "msdyn_device"
     },
     {
-      "name": "EventType_QueryColumn",
-      "value": "msauto_eventtypename"
+      "name": "IoTAlertEntity_AlertTime",
+      "value": "msdyn_alerttime"
     },
     {
-      "name": "EventType_EntityKey",
-      "value": "msauto_deviceeventtypeid"
+      "name": "IoTAlertEntity_Description",
+      "value": "msdyn_description"
     },
     {
-      "name": "Device_EntityName",
-      "value": "msauto_device"
-    },
-    {
-      "name": "Device_QueryColumn",
-      "value": "msauto_name"
-    },
-    {
-      "name": "Device_EntityKey",
-      "value": "msauto_deviceid"
-    },
-    {
-      "name": "Driver_EntityName",
-      "value": "msauto_driver"
-    },
-    {
-      "name": "Driver_Name",
-      "value": "msauto_drivername"
-    },
-    {
-      "name": "Driver_QueryColumn",
-      "value": "msauto_driverexternalid"
-    },
-    {
-      "name": "Driver_EntityKey",
-      "value": "msauto_driverid"
+      "name": "IoTAlertEntity_AlertData",
+      "value": "msdyn_alertdata"
     },
     {
       "name": "DataVerse_Secret",
@@ -82,5 +58,9 @@
     {
       "name": "DataVerse_Uri",
       "value": "<yourdataverse_uri>"
+    },
+    {
+      "name": "VehicleEventEHConnectionString",
+      "value": "<EHConnectionString>"
     }
 ]

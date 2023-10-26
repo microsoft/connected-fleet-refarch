@@ -12,7 +12,7 @@ public static class Settings
     public static string AssetEntityKey { get { return GetSetting("AssetEntity_CustomerAssetId"); } }
 
     public static string IoTDeviceEntityName { get { return GetSetting("IoTDeviceEntity_EntityName"); } }
-    public static string IoTDeviceEntityQueryColumn { get { return GetSetting("IoTDeviceEntity_IoTDeviceId"); } }
+    public static string IoTDeviceEntityQueryColumn { get { return GetSetting("IoTDeviceEntity_Name"); } }
     public static string IoTDeviceEntityKey { get { return GetSetting("IoTDeviceEntity_IoTDeviceId"); } }
 
 
