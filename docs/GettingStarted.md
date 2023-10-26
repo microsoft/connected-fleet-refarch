@@ -9,10 +9,10 @@
 
 ## Setup Instructions
 
-- Install WSL2 in your Windows computer
-- Install dotnet in your WSL2 installation
+- Install the Windows Subsystem for Linux (WSL2) in your Windows computer or a suitable Linux Distribution
+- Install dotnet
 - Install Visual Studio Code
-- Check out the GitHub repository in your WSL environment
+- Check out the GitHub repository in your environment
 
 ``` bash
 git clone https://github.com/microsoft/connected-fleet-refarch.git
@@ -25,31 +25,26 @@ cd connected-fleet-refarch
 code .
 ```
 
-- From the terminal, build the Azure Functions
-
-``` bash
-dotnet build src/FleetIntegration/Functions/
-dotnet build src/TelemetryPlatform/Functions/
-```
-
-- From the terminal, build the Test Client
-
-``` bash
-dotnet build src/TestClient/
-```
-
 - Install the following extensions in Visual Studio Code
   - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep): Bicep language support for Visual Studio Code
   - [Azure Functions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions): quickly create, debug, manage, and deploy serverless apps directly from VS Code
   - [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client): to assist in updating
+  
 - Follow the instructions to deploy the infrastructure for each layer
-  - [Telemetry Platform](../infra/deployment/TelemetryPlatform/README.md)
-  - [Fleet Integration](../infra/deployment/FleetIntegration/README.md)
+  - [Telemetry Platform](../infra/deployment/TelemetryPlatform/README.md) requires configuring the Event Grid MQTT broker feature, create resources that represent the devices and deploy function apps to process the vehicle messages
+  - [Fleet Integration](../infra/deployment/FleetIntegration/README.md) deploy the resources to process messages into analytics and business integration
 
-- Deploy the Azure Functions
-- Use an MQTT Client or the Test Client to send test messages 
+- Deploy and configure the Azure Functions
+  - [Deploy and configure the Telemetry Platform](../src/TelemetryPlatform/Functions/README.md) deploys and configures the message processing code
+  - [Deploy and configure the Fleet Integration](../src/FleetIntegration/Functions/README.md) deploys and configures the dataverse integration code
+
+- Use an MQTT Client or the [Test Client](../src/TestClient/README.md) to send test messages.
 
 ## DataVerse
+
+The Fleet Integration Layer is able to create entries in the Dataverse.
+
+<!--
 
 The Fleet Integration Layer has a dependency on the Microsoft Automotive Common Data Model.
 
@@ -67,3 +62,5 @@ The Fleet Integration Layer has a dependency on the Microsoft Automotive Common 
 ``` bash
     az functionapp config appsettings set -g <resourceGroup> -n <funcApp> --settings @FunctionsConfig.json
 ```
+
+-->
