@@ -2,6 +2,9 @@
 
 This document covers how to build, deploy and configure the Azure Functions for the Telemetry Platform.
 
+
+![Deployment Diagram](FunctionDeploymentOverview.svg)
+
 The Telemetry Platform has two functions
 
 * VehicleStatusHandler will process signals posted to the +/vehiclestatus topic
@@ -14,7 +17,6 @@ The function apps require the following configuration
   * Exceptions are stored in a *deadletter* event hub
   * Events are routed to an event hub for alerts & events in the *Fleet Integration* Layer
   * Status updates are routed to an event hub for periodical status updates in the *Fleet Integration* Layer
-
 
 ## Prerequisites
 
