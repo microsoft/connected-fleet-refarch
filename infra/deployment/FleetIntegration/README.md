@@ -1,7 +1,7 @@
 # Introduction 
 This deployment directory contains the BICEP scripts to deploy the base Fleet Integration Layer
 
-# Deployment Artifacts
+## Deployment Artifacts
 
 The following resources are included in the deployment:
 
@@ -14,9 +14,7 @@ The following resources are included in the deployment:
 - Event Hub Namespace (2 Event Hubs)
 - Azure Data Explorer
 
-
-
-# Instructions
+## Instructions
 
 1. Create a Resource Group in the Azure Portal to have the resources deployed into  
 
