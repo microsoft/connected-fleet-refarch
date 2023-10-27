@@ -1,3 +1,4 @@
+// All raw data will land in this table
 .create-merge table RawVehicleStatus (
   vehicleId:string,
   timestamp:datetime,
@@ -9,7 +10,12 @@
   additionalProperties: dynamic
   )
 
+// All data in the Raw table will be deleted after 30 days.
+// In case of problems in ingest procedures, this table can be used to either recover or troubleshoot
+.alter-merge table RawVehicleStatus policy retention softdelete = 30d
 
+
+// Contains expanded signals
 .create-merge table VehicleStatus (
   vehicleId:string,
   timestamp:datetime,
@@ -22,7 +28,12 @@
   additionalProperties: dynamic
   )
 
-.create-or-alter function VehicleStatusExpand() {
+
+// Contains a harmonized status updates, where specific values are moved to columns
+.create table VehicleStatusHarmonized (vehicleId: string, timestamp: datetime, eventId: string, longitude: real, latitude: real, heading: real, altitude: real, speed: real, engineRpm: real, odometer: real, isRunning: bool, isIdling: bool, h3Big: string, h3Medium: string, h3Small: string, mqttMessageId: guid, mqttTimestamp: datetime, schemaVersion: string, extendedProperties: dynamic, additionalProperties: dynamic, signals: dynamic) 
+
+
+.create-or-alter function UpdateVehicleStatusExpand() {
     RawVehicleStatus
     | mv-expand allsignals = signals
     | project
@@ -37,6 +48,44 @@
         additionalProperties
 }
 
-.alter table VehicleStatus policy update @'[{"Source": "RawVehicleStatus", "Query": "VehicleStatusExpand()", "IsEnabled": "True", "IsTransactional": true }]'
+.create-or-alter function UpdateVehicleStatusHarmonized() {
+    // This will take the latest timestamp for each individual value and create a bag.
+    // The bag is used to expand each individual value
+    // Additional calculations will be made to adjust the entries
+    RawVehicleStatus
+    | mv-apply signals on (
+            project name = tostring(signals.name), value = tostring(signals.value), timestamp=todatetime(signals.timestamp)
+            | summarize arg_max(timestamp, *) by name, timestamp        
+            | summarize signals=make_bag(bag_pack(name, value)), timestamp = max(timestamp)
+        )
+    | extend
+        mqttMessageId =  toguid(additionalProperties.Id),
+        mqttTimestamp = todatetime(additionalProperties.Time),
+        longitude = toreal(signals.['Vehicle.CurrentLocation.Longitude']),
+        latitude = toreal(signals.['Vehicle.CurrentLocation.Latitude']),
+        heading = toreal(signals.['Vehicle.CurrentLocation.Heading']),
+        altitude = toreal(signals.['CurrentLocation.Altitude']),    
+        speed = toreal(signals.['OBD.Speed']),
+        engineRpm = toreal(signals.['OBD.EngineSpeed']),
+        odometer =  toreal(signals.['Vehicle.TraveledDistance'])
+    | extend
+        isRunning = iff(not(isnull(engineRpm)) and engineRpm > 400, true, false),
+        isIdling = iff(speed == 0 and engineRpm > 400, true, false)
+    | extend 
+        h3Big = geo_point_to_h3cell(longitude, latitude, 6),
+        h3Medium = geo_point_to_h3cell(longitude, latitude, 9), 
+        h3Small = geo_point_to_h3cell(longitude, latitude, 12)
+    | project-reorder 
+        vehicleId, timestamp, eventId, longitude, latitude, heading, altitude, speed, engineRpm, odometer,
+        isRunning, isIdling,
+        h3Big, h3Medium, h3Small,
+        mqttMessageId, mqttTimestamp
+    | project-away geoLocation
+}
 
-.alter-merge table RawVehicleStatus policy retention softdelete = 0s
+
+.alter table VehicleStatus policy update @'[{"Source": "RawVehicleStatus", "Query": "UpdateVehicleStatusExpand()", "IsEnabled": "True", "IsTransactional": true }]'
+
+.alter table VehicleStatusHarmonized policy update @'[{"Source": "RawVehicleStatus", "Query": "UpdateVehicleStatusHarmonized()", "IsEnabled": "True", "IsTransactional": true }]'
+
+
