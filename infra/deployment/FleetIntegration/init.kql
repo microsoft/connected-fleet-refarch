@@ -1,4 +1,4 @@
-.create table RawVehicleStatus (
+.create-merge table RawVehicleStatus (
   vehicleId:string,
   timestamp:datetime,
   schemaVersion:string,
@@ -10,7 +10,7 @@
   )
 
 
-.create table VehicleStatus (
+.create-merge table VehicleStatus (
   vehicleId:string,
   timestamp:datetime,
   schemaVersion:string,
@@ -22,7 +22,7 @@
   additionalProperties: dynamic
   )
 
-.create function VehicleStatusExpand() {
+.create-or-alter function VehicleStatusExpand() {
     RawVehicleStatus
     | mv-expand allsignals = signals
     | project
