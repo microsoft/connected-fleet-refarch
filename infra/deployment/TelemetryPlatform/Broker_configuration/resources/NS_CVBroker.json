@@ -5,7 +5,12 @@
       },
       "topicSpacesConfiguration": {
         "state": "Enabled",
-        "routeTopicResourceId": "<<eg-topic-id>>"
+        "routeTopicResourceId": "<<eg-topic-id>>",
+        "clientAuthentication": {
+          "alternativeAuthenticationNameSources": [
+              "ClientCertificateSubject"
+          ]        
+        }
       }
     },
     "location": "centraluseuap",
