@@ -4,14 +4,6 @@
     "clientCertificateAuthentication": {
         "validationScheme": "SubjectMatchesAuthenticationName"
     },
-    "authentication": {
-        "certificateSubject": {
-            "commonName": "device01.mqtt.contoso.com",
-            "organization": "Contoso",
-            "organizationUnit": "IoT",
-            "countryCode": "US"
-        }
-    },
     "attributes": {
         "type": "vehicle"
     },
