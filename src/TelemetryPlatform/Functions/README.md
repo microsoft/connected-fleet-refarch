@@ -2,7 +2,6 @@
 
 This document covers how to build, deploy and configure the Azure Functions for the Telemetry Platform.
 
-
 ![Deployment Diagram](FunctionDeploymentOverview.svg)
 
 The Telemetry Platform has two functions
@@ -24,19 +23,21 @@ The function apps require the following configuration
 * Azure CLI installed
 * Azure Functions Core Tools CLI installed
 
-1. Change directory to the Telemetry Platform function app directory
+## Instructions
+
+* Change directory to the Telemetry Platform function app directory
 
 ```bash
     cd ./src/TelemetryPlatform/Functions
 ```
 
-1. Build the Functions from the terminal
+* Build the Functions from the terminal
 
 ```bash
     dotnet build
 ```
 
-1. Deploy the Functions to your Function app instance.
+* Deploy the Functions to your Function app instance.
 
 The following command shows you all of the function app resources deployed.
 
@@ -66,7 +67,7 @@ After the command succeeds, you can check the functions deployed using the follo
      az functionapp function list --query "[].{name:name, resource:resourceGroup}" --name functions-yyyyyyyyyyyyy --resource-group rg-telemetryplatform --output table
 ```
 
-1. Configure the consumption of messages from the event Event Grid Topic
+* Configure the consumption of messages from the event Event Grid Topic
 
   - Open your Event Grid Topic (by default: telemetryingestion) and go to the blade "Event Subscriptions"
   - Create an event subscription for *vehicle status*. Set the following parameters
@@ -91,7 +92,7 @@ After the command succeeds, you can check the functions deployed using the follo
     | Filters | Enable subject filtering | True |
     | Filters |Subject ends with | vehicleevent |
 
-1. Configure the event hubs shared access policies that will be used by the Function Apps to publish the processed messages. You can list the Event Hub namespaces using the following command
+* Configure the event hubs shared access policies that will be used by the Function Apps to publish the processed messages. You can list the Event Hub namespaces using the following command
 
 ```bash
     az resource list --resource-type "Microsoft.EventHub/namespaces" --output table
@@ -134,7 +135,7 @@ Use the following command to retrieve the primary connection string
 az eventhubs namespace authorization-rule keys list --name statusandevents --namespace-name eh-zzzzzzzzzzzzz --resource-group eg-fleetintegration
 ```
 
-1. Configure the Function Apps with the Event Hubs primary strings. In the function apps, go to the Environment Variables blade and add the following properties:
+* Configure the Function Apps with the Event Hubs primary strings. In the function apps, go to the Environment Variables blade and add the following properties:
 
 | Name                     | Value                  |
 |--------------------------|------------------------|
@@ -152,15 +153,16 @@ az functionapp config appsettings set --name functions-yyyyyyyyyyyyy --resource-
 az functionapp config appsettings set --name functions-yyyyyyyyyyyyy --resource-group eg-telemetryplatform --settings VehicleEventEventHubConnectionString="Endpoint=<fleet integration hub endpoint>"
 ```
 
-1. Restart the Function App from the portal or using the following commmand (replace the values as appropiate)
+* Restart the Function App from the portal or using the following commmand (replace the values as appropiate)
 
 ```bash
 az functionapp restart --name functions-yyyyyyyyyyyyy --resource-group eg-telemetryplatform 
 ```
 
-1. Use the Test Client to send data. If the configuration is correct, the data will be processed by the Function Apps and land in the Event Hubs for the Fleet Integration. The Telemetry Platform is configured to send all messages to the Azure Data Explorer instance. You can also monitor the log files from the command line using the following command:
+## Verification
+
+* Use the Test Client to send data. If the configuration is correct, the data will be processed by the Function Apps and land in the Event Hubs for the Fleet Integration. The Telemetry Platform is configured to send all messages to the Azure Data Explorer instance. You can also monitor the log files from the command line using the following command:
 
 ```bash
 func azure functionapp logstream functions-yyyyyyyyyyyyy
 ``
-
