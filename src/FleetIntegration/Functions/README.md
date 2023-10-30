@@ -53,7 +53,35 @@ The setup procedure has 3 main steps:
   * Select your created application registration *DynamicsServiceAccountApp*
   * Select the business unit (your selected organiyation id)
   * Add the security role *Service Writer*
-  
+
+* Configure the event hubs shared access policies that will be used by the Function Apps to process the event messages. Configure a Listen policy.
+
+You can list the Event Hub namespaces using the following command
+
+```bash
+    az resource list --resource-type "Microsoft.EventHub/namespaces" --output table
+```
+
+A sample output looks like this
+
+```bash
+Name              ResourceGroup                        Location    Type                           Status
+----------------  -----------------------------------  ----------  -----------------------------  --------
+eh-zzzzzzzzzzzzz  eg-fleetintegration                  eastus      Microsoft.EventHub/namespaces
+eh-wwwwwwwwwwwww  eg-telemetryplatform                 eastus      Microsoft.EventHub/namespaces
+```
+
+You can use the following command to create the shared access policy in the Fleet Integration layer to listen for messages (replace the namespace name and the resource group with your values):
+
+```bash
+az eventhubs namespace authorization-rule create --name dynamicsintegration --namespace-name eh-zzzzzzzzzzzzz --resource-group eg-fleetintegration  --rights Listen
+```
+
+Use the following command to retrieve the primary connection string
+
+```bash
+az eventhubs namespace authorization-rule keys list --name statusandevents --namespace-name eh-zzzzzzzzzzzzz --resource-group eg-fleetintegration
+```
 
 * Change directory to the Fleet Integration function app directory
 
@@ -93,10 +121,24 @@ functions-yyyyyyyyyyyyy  East US     Running  rg-telemetryplatform              
 
 ```
 
-Please note the name of your function app "functions-xxxxxxxxxxxxx" in your *FleetIntegration* resource group. Deploy the function app to your function app instance using the following command
+Please note the name of your function app "functions-xxxxxxxxxxxxx" in your *FleetIntegration* resource group. 
+
+Set the configuration using the following command:
 
 ```bash
-    func azure functionapp publish functions-xxxxxxxxxxxxx --dotnet --properties @FunctionsConfig.json
+    az functionapp config appsettings set --resource-group rg-fleetintegration --name functions-xxxxxxxxxxxxx --settings @FunctionsConfig.json
+```
+
+Deploy the function app to your function app instance using the following command
+
+```bash
+    func azure functionapp publish functions-xxxxxxxxxxxxx --dotnet
+```
+
+* Restart the Function App from the portal or using the following commmand (replace the values as appropiate)
+
+```bash
+    az functionapp restart --name functions-xxxxxxxxxxxxx --resource-group eg-fleetintegration 
 ```
 
 After the command succeeds, you can check the functions deployed using the following command (replace name and resource group with your names)
@@ -105,3 +147,10 @@ After the command succeeds, you can check the functions deployed using the follo
      az functionapp function list --query "[].{name:name, resource:resourceGroup}" --name functions-yyyyyyyyyyyyy --resource-group rg-fleetintegration --output table
 ```
 
+## Verification
+
+* Use the Test Client to send Event Data. Event data will be stored in the dataverse as IoT Alerts.
+
+```bash
+    func azure functionapp logstream functions-xxxxxxxxxxxxx
+``
