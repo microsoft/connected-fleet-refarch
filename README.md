@@ -12,24 +12,28 @@ Welcome to the Microsoft Connected Fleet Reference Architecture.   The reference
 
 The initial release of the Connected Fleet Reference Architecture is focused on 3 key components:
 
+
+
 1. **Mobility Services Telemetry Platform** - a lightweight sample application to ingest MQTT data from the vehicle, parse and send to the Fleet Integration layer.   This sample is meant to be replaced with a fully functional Connected Vehicle/Fleet solution.
 
 1. **Fleet Integration** - The ability to standardize the import of vehicle telemetry and vehicle events into Azure Synapse and the Microsoft DataVerse. This integration enables seamless connectivity from the vehicle all the way to business integration, providing real-time insights into fleet performance and productivity.
 
-1. **Integration with Dynamics 365 Field Service** - Leveraging the out of box entities of D365 Field Service to store IoT Devices, Assets and Alerts for vehicle events.
+1. **Integration with Dataverse, Power Platform and Dynamics 365 Field Service** - Leveraging the out of box entities of D365 Field Service to store IoT Devices, Assets and Alerts for vehicle events.
 
-## Capabilities available in this preview
+## Available Capabilities
 
 This private preview provides the following capabilities
 
+![High Level Architecture](./docs/images/CapabilitiesOverview.svg)
+
 - Mobility Services Telemetry Platform.
-  - Cloud based MQTT Broker.
+  - Cloud based Event grid with the MQTT broker feature.
   - Azure Functions to receive device to cloud messages and send Vehicle Events and Vehicle Status updates to the Fleet Integration Layer.
   - BICEP script templates to create the dependent components Azure.
 - Fleet Integration Layer.
   - Event Hub to receive Vehicle Events and Vehicle Status updates.
-  - Azure Function to connect into DataVerse and persist Vehicle Event Data.
-  - Azure Data Explorer repository to save Vehicle Status updates and supporting Vehicle Event Data.
+  - Azure Function to connect into Dataverse and persist Vehicle Event Data.
+  - Azure Data Explorer service to save Vehicle Status updates and supporting Vehicle Event Data.
   - Azure Data Explorer Ingestion Function to parse incoming event hub data and persist into tables.
   - BICEP script templates to create the dependent components Azure.
 - Dynamics 365 Field Service Integration.
