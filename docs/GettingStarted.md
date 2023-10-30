@@ -11,7 +11,7 @@
 ## Setup Instructions
 
 - Install the Windows Subsystem for Linux (WSL2) in your Windows computer or a suitable Linux Distribution
-- Install dotnet
+- Install dotnet-sdk-6.0
 - Install Visual Studio Code
 - Check out the GitHub repository in your environment
 
