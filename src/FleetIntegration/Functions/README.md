@@ -80,7 +80,7 @@ az eventhubs namespace authorization-rule create --name dynamicsintegration --na
 Use the following command to retrieve the primary connection string
 
 ```bash
-az eventhubs namespace authorization-rule keys list --name statusandevents --namespace-name eh-zzzzzzzzzzzzz --resource-group eg-fleetintegration
+az eventhubs namespace authorization-rule keys list --name dynamicsintegration --namespace-name eh-zzzzzzzzzzzzz --resource-group eg-fleetintegration
 ```
 
 * Change directory to the Fleet Integration function app directory
@@ -135,12 +135,6 @@ Deploy the function app to your function app instance using the following comman
     func azure functionapp publish functions-xxxxxxxxxxxxx --dotnet
 ```
 
-* Restart the Function App from the portal or using the following commmand (replace the values as appropiate)
-
-```bash
-    az functionapp restart --name functions-xxxxxxxxxxxxx --resource-group eg-fleetintegration 
-```
-
 After the command succeeds, you can check the functions deployed using the following command (replace name and resource group with your names)
 
 ```bash
@@ -153,4 +147,4 @@ After the command succeeds, you can check the functions deployed using the follo
 
 ```bash
     func azure functionapp logstream functions-xxxxxxxxxxxxx
-``
+```

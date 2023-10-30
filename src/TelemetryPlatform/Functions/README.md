@@ -165,4 +165,4 @@ az functionapp restart --name functions-yyyyyyyyyyyyy --resource-group eg-teleme
 
 ```bash
 func azure functionapp logstream functions-yyyyyyyyyyyyy
-``
+```

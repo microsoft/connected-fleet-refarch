@@ -8,7 +8,7 @@ Welcome to the Microsoft Connected Fleet Reference Architecture.   The reference
 |---|---|
 | **Vehicle Connectivity**  | Connectivity between device to cloud is supported through various patterns incluing Eclipse SDV, Embeded Telematics Control Units and OBD-II dongles.   Typically, these vehicle devices commuicate to the cloud using MQTT and/or HTTPS.    |
 | **Mobility Services**  | The Mobility Serivces layers is responsible for handling hyper-scale secure connectivity, telemetry ingestion, command sending, etc. This layer handles everything from vehicle status updates to vehicle events, such as crashes, maintenance needs, and other critical events.  This layer also integrates with the Fleet Integration layer for communication into back-end services  |
-| **Line of Business Integration**  | This layer receives information via the Fleet Integration Layer and stores the information into Azure Synapse, Data Verse (using the Automotive Common Data Model) and can be extended using Dynamics 365 and/or Power Platform  |
+| **Line of Business Integration**  | This layer receives information via the Fleet Integration Layer and stores the information into Azure Synapse, Data Verse (using Dynamics 365 Field Service) and can be extended using Dynamics 365 and/or Power Platform  |
 
 The initial release of the Connected Fleet Reference Architecture is focused on 3 key components:
 
@@ -16,7 +16,7 @@ The initial release of the Connected Fleet Reference Architecture is focused on 
 
 1. **Fleet Integration** - The ability to standardize the import of vehicle telemetry and vehicle events into Azure Synapse and the Microsoft DataVerse. This integration enables seamless connectivity from the vehicle all the way to business integration, providing real-time insights into fleet performance and productivity.
 
-1. **Fleet Data Model** - An extension to the Automotive Common Data Model that includes new entities related to fleet operations.
+1. **Integration with Dynamics 365 Field Service** - Leveraging the out of box entities of D365 Field Service to store IoT Devices, Assets and Alerts for vehicle events.
 
 ## Capabilities available in this preview
 
@@ -32,8 +32,8 @@ This private preview provides the following capabilities
   - Azure Data Explorer repository to save Vehicle Status updates and supporting Vehicle Event Data.
   - Azure Data Explorer Ingestion Function to parse incoming event hub data and persist into tables.
   - BICEP script templates to create the dependent components Azure.
-- Fleet Data Model.
-  - A set of REST API calls to create the necessary tables in the DataVerse (NOTE: This is only necessary until an upcoming version of the Automotive Common Data Model is available).
+- Dynamics 365 Field Service Integration.
+  - Storing of Vehicle Event critical event data into D365 Field Service entities including IoT Assets, Devices and Alerts.
 
 ## Getting Started
 
