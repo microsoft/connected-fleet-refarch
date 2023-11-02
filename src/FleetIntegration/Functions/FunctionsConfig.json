@@ -40,6 +40,10 @@
       "value": "msdyn_alerttime"
     },
     {
+      "name": "IoTAlertEntity_AlertToken",
+      "value": "msdyn_alerttoken"
+    },    
+    {
       "name": "IoTAlertEntity_Description",
       "value": "msdyn_description"
     },

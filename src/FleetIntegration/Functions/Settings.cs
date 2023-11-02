@@ -20,7 +20,7 @@ public static class Settings
     public static string IoTAlertEntityAsset { get { return GetSetting("IoTAlertEntity_Asset"); } }
     public static string IoTAlertEntityDevice { get { return GetSetting("IoTAlertEntity_Device"); } }    
     public static string IoTAlertEntityAlertTime { get { return GetSetting("IoTAlertEntity_AlertTime"); } }    
-    public static string IoTAlertEntityDescription { get { return GetSetting("IoTAlertEntity_Description"); } }    
+    public static string IoTAlertEntityAlertToken { get { return GetSetting("IoTAlertEntity_AlertToken"); } }        public static string IoTAlertEntityDescription { get { return GetSetting("IoTAlertEntity_Description"); } }    
     public static string IoTAlertEntityAlertData { get { return GetSetting("IoTAlertEntity_AlertData"); } }    
 
 
