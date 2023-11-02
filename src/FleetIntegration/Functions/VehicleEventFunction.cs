@@ -87,6 +87,7 @@ public class VehicleEventHandler
             eventEntity[Settings.IoTAlertEntityAsset] = new EntityReference(Settings.AssetEntityName, assetId);
             eventEntity[Settings.IoTAlertEntityDevice] = new EntityReference(Settings.IoTDeviceEntityName, deviceId);
             eventEntity[Settings.IoTAlertEntityAlertTime] = vehicleEvent.Timestamp;
+            eventEntity[Settings.IoTAlertEntityAlertToken] = vehicleEvent.EventId;
             eventEntity[Settings.IoTAlertEntityDescription] = $"{vehicleEvent.EventType} / {vehicleEvent.EventSubType}";
             eventEntity[Settings.IoTAlertEntityAlertData] = JsonConvert.SerializeObject(vehicleEvent);
                         
