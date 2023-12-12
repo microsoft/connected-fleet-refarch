@@ -69,8 +69,15 @@ class Program
 
         foreach (string entry in entries)
         {
-            Console.WriteLine($"Device '{deviceName}': Publishing {entry}");
-            var puback = await mqttClient.PublishStringAsync($"{deviceName}.mqtt.contoso.com/vehiclestatus", entry);
+
+            // Get the current time and serialize it in a string that can be stored in a json file
+            string currentTime = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            
+            // Replace the <replace> placeholder in the json file with the current time
+            string updatedEntry = entry.Replace("<replace>", currentTime);
+            
+            Console.WriteLine($"Device '{deviceName}': Publishing {updatedEntry}");
+            var puback = await mqttClient.PublishStringAsync($"{deviceName}.mqtt.contoso.com/vehiclestatus", updatedEntry);
             Console.WriteLine(puback.ReasonString);
             await Task.Delay(1000);
         }
