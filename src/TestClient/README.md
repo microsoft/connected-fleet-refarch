@@ -17,3 +17,25 @@ To execute, use
 ```bash
     dotnet run
 ```
+
+To build a container use
+
+```bash
+docker build -t test-client-image -f Dockerfile ../..
+```
+
+Note: we are passing the top level directory of the project, so we can include the generated certs automatically.
+
+Then use the following command to run locally (make sure to pass your Event Grid MQTT broker url):
+
+```bash
+docker run -it -e gw_url="<yournamespace>-1.ts.eventgrid.azure.net" --rm test-client-image
+```
+
+You can push the image to a container registry and run it in an Azure Container Instance
+
+```bash
+docker tag test-client-image <yourregistry>.azurecr.io/test-client-image
+
+docker push <yourregistry>.azurecr.io/test-client-image
+```
