@@ -1,0 +1,39 @@
+{
+  "type": "BreakdownAlert",
+  "subType": "UserRequest",
+  "driverId": "f10e2821bbbea527ea02200352313bc059445190",
+  "timestamp": "2023-02-20T16:01:01.123+0100",
+  "extendedProperties": [
+    {
+      "name": "category",
+      "value": "EDGE_CALCULATED"
+    },
+    {
+      "name": "obd2ErrorCodes",
+      "value": "P0101"
+    },
+    {
+      "name": "obd2ErrorCodesDescription",
+      "value": "Mass or Volume Air Flow Circuit Range/Performance Problem"
+    }
+  ],
+  "eventData": [
+    {
+      "timestamp": "2023-02-20T16:01:01.123+0100",
+      "signals": [
+        {
+          "signal": "Vehicle.CurrentLocation.Latitude",
+          "value": "52.433734"
+        },
+        {
+          "signal": "Vehicle.CurrentLocation.Longitude",
+          "value": "10.778549"
+        },
+        {
+          "signal": "Vehicle.CurrentLocation.Heading",
+          "value": "253"
+        }
+      ]
+    }
+  ]
+}
