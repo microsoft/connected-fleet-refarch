@@ -24,7 +24,7 @@ var caCert = trim(loadTextContent('../TelemetryPlatform/cert-gen/certs/azure-mqt
 // We will create two resources a custom topic tor eceive the messages and an event grid namespace with the MQTT broker functionalily enabled.
 
 // Creation of a custom topic
-resource vehicleteleemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' = {
+resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' = {
   name: eventGridName
   location: rgLocation
   properties: {
@@ -32,6 +32,8 @@ resource vehicleteleemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-pre
     inputSchema: 'CloudEventSchemaV1_0'
   }
 }
+
+output vehicletelemetrycustomtopicid string = vehicletelemetrycustomtopic.id
 
 
 // Create an Event Grid Namespace with MQTT Enabled
@@ -46,10 +48,12 @@ resource eventGridNamespace 'Microsoft.EventGrid/namespaces@2024-06-01-preview' 
     publicNetworkAccess: 'Enabled'    
     topicSpacesConfiguration: {
       state: 'Enabled'            
+      /**
       routeTopicResourceId: vehicleteleemetrycustomtopic.id
       routingIdentityInfo: {
         type: 'SystemAssigned'
       }
+      */
       clientAuthentication: {
         alternativeAuthenticationNameSources: [
           'ClientCertificateSubject'
@@ -61,6 +65,8 @@ resource eventGridNamespace 'Microsoft.EventGrid/namespaces@2024-06-01-preview' 
     type: 'SystemAssigned'
   }
 }
+
+output eventGridNamespaceName string = eventGridNamespace.name
 
 // Add the TestCA Certificate to the Event Grid Namespace
 resource eventGridNamespaceCACertificate 'Microsoft.EventGrid/namespaces/caCertificates@2024-06-01-preview' = {
@@ -101,6 +107,10 @@ resource TS_TelemetryPub 'Microsoft.EventGrid/namespaces/topicSpaces@2024-06-01-
 resource PB_pub_allvehicles 'Microsoft.EventGrid/namespaces/permissionBindings@2024-06-01-preview' = {
   name: 'pb-allvehicles-telemetrypub'
   parent: eventGridNamespace
+  dependsOn: [
+    CG_allvehicles
+    TS_TelemetryPub
+  ]
   properties: {
     clientGroupName: 'allvehicles'
     description: 'Allows all vehicles to publish to all topics'
@@ -139,44 +149,11 @@ resource eventGridDataSenderRoleDefinition 'Microsoft.Authorization/roleDefiniti
 
 // Assign the data sender role to event grid to allow it to send events to the topic
 resource vehicleteleemetrycustomtopicroleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(subscription().id, vehicleteleemetrycustomtopic.id, eventGridDataSenderRoleDefinition.id) // Name must be deterministic
-  scope: vehicleteleemetrycustomtopic
+  name: guid(subscription().id, vehicletelemetrycustomtopic.id, eventGridDataSenderRoleDefinition.id) // Name must be deterministic
+  scope: vehicletelemetrycustomtopic
   properties: {
     roleDefinitionId: eventGridDataSenderRoleDefinition.id
     principalId: eventGridNamespace.identity.principalId
     principalType: 'ServicePrincipal'
   }
 }
-
-// Create the rest of the resources
-/**
-module eventhub '../TelemetryPlatform/EventHub.bicep' = {
-  name: 'eventhub'
-  params: {
-    eventHubNamespaceName: 'eh-${rgUniqueString}'
-    eventHubDeadletterName: 'deadletter'
-    eventHubSku: 'Standard'
-    eventHubLocation: rgLocation
-  }
- }
-
-module appinsights '../TelemetryPlatform/AppInsights.bicep' = {
-  name: 'appinsights'
-   params: {
-     opsname: 'ops-${rgUniqueString}'
-     appinsname: 'appins-${rgUniqueString}'
-     location: rgLocation
-   }
- }
-
-module azurefunc '../TelemetryPlatform/AzureFunction.bicep' = {
-  name: 'azurefunc'
-  params: {
-     appInsightsInstrumentationKey: appinsights.outputs.appInsightsInstrKey
-     appName: 'functions-${rgUniqueString}'
-     appPlanName: 'appplan-${rgUniqueString}'
-     location: rgLocation
-  }
-}
-**/
-

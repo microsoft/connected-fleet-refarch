@@ -1,4 +1,0 @@
-{
-    "description": "All Vehicles",
-    "query": "attributes.type = 'vehicle'"
-}
