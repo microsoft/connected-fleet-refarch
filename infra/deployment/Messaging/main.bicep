@@ -1,7 +1,9 @@
-// Location of the resource group, will be used for all resources going forward
 param rgLocation string = resourceGroup().location
 
-// Array that contains all of the devices
+// The name that will be assigned all resources related to the event grid
+param eventGridName string = 'vehicletelemetry'
+
+// Array that contains the devices that will be registered to the event hub
 param deviceNames array = [
   'device01'
   'device02'
@@ -10,14 +12,32 @@ param deviceNames array = [
   'device05'
 ]
 
+// A unique string based on the resource group name
 var rgUniqueString = uniqueString(resourceGroup().id)
 
-// The Test CA Certificate, used to validate the devices connecting to the Event Grid Namespace
+// The Intermediate Test CA Certificate, used to validate the devices connecting to the Event Grid Namespace
 var caCert = trim(loadTextContent('../TelemetryPlatform/cert-gen/certs/azure-mqtt-test-only.intermediate.cert.pem'))
 
+// To process the MQTT telemetry messages, we will route all messages to a custom topic
+// See https://learn.microsoft.com/en-us/azure/event-grid/mqtt-routing-to-azure-functions-portal as a reference
+
+// We will create two resources a custom topic tor eceive the messages and an event grid namespace with the MQTT broker functionalily enabled.
+
+// Creation of a custom topic
+resource vehicleteleemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' = {
+  name: eventGridName
+  location: rgLocation
+  properties: {
+    publicNetworkAccess: 'Enabled'
+    inputSchema: 'CloudEventSchemaV1_0'
+  }
+}
+
+
 // Create an Event Grid Namespace with MQTT Enabled
+// The Event Grid has a System assigned identity to enable routing
 resource eventGridNamespace 'Microsoft.EventGrid/namespaces@2024-06-01-preview' = {
-  name: 'vehicletelemetry-${rgUniqueString}'
+  name: '${eventGridName}-${rgUniqueString}'
   location: rgLocation
   tags: {
     environment: 'dev'
@@ -26,16 +46,19 @@ resource eventGridNamespace 'Microsoft.EventGrid/namespaces@2024-06-01-preview' 
     publicNetworkAccess: 'Enabled'    
     topicSpacesConfiguration: {
       state: 'Enabled'            
+      routeTopicResourceId: vehicleteleemetrycustomtopic.id
+      routingIdentityInfo: {
+        type: 'SystemAssigned'
+      }
       clientAuthentication: {
         alternativeAuthenticationNameSources: [
           'ClientCertificateSubject'
         ]
       }
-            
     }
-    topicsConfiguration: {
-      
-    }  
+  }  
+  identity: {
+    type: 'SystemAssigned'
   }
 }
 
@@ -60,6 +83,7 @@ resource CG_allvehicles 'Microsoft.EventGrid/namespaces/clientGroups@2024-06-01-
 }
 
 // Create a topic space for publishing telemetry
+// This topic space enables vehicle devices to publish vehicle status and vehicle events, using the device name as the topic.
 resource TS_TelemetryPub 'Microsoft.EventGrid/namespaces/topicSpaces@2024-06-01-preview' = {
   name: 'telemetrypub'
   parent: eventGridNamespace
@@ -73,6 +97,7 @@ resource TS_TelemetryPub 'Microsoft.EventGrid/namespaces/topicSpaces@2024-06-01-
 }
 
 // Create a permission binding for the allvehicles group to publish to the telemetry topic space
+// This permission binding allows vehicles with the type attribute set to vehicle to publish to the telemetry topic space
 resource PB_pub_allvehicles 'Microsoft.EventGrid/namespaces/permissionBindings@2024-06-01-preview' = {
   name: 'pb-allvehicles-telemetrypub'
   parent: eventGridNamespace
@@ -83,18 +108,6 @@ resource PB_pub_allvehicles 'Microsoft.EventGrid/namespaces/permissionBindings@2
     topicSpaceName: 'telemetrypub'
   }
 }
-
-// Create an Event Grid Namespace Subscription for the telemetry topic, this allows routing to other Azure services
-resource eventGridNamespaceTopic 'Microsoft.EventGrid/namespaces/topics@2024-06-01-preview' = {
-  name: 'telemetryingestion'
-  parent: eventGridNamespace
-  properties: {    
-    eventRetentionInDays: 7
-    inputSchema: 'CloudEventSchemaV1_0'
-    publisherType: 'Custom'
-  }
-}
-
 
 // Create all the client devices
 resource devices 'Microsoft.EventGrid/namespaces/clients@2024-06-01-preview' = [for devicename in deviceNames: { 
@@ -114,6 +127,56 @@ resource devices 'Microsoft.EventGrid/namespaces/clients@2024-06-01-preview' = [
 }]
 
 
+// Enable managed identity for the namespace
+// https://learn.microsoft.com/en-us/azure/event-grid/mqtt-routing-to-azure-functions-portal#enable-managed-identity-for-the-namespace
 
+// Create a reference to the Event Grid Data sender role definition
+@description('This is the built-in Event Grid Data Sender role. See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles')
+resource eventGridDataSenderRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
+  scope: subscription()
+  name: 'd5a91429-5739-47e2-a06b-3470a27159e7'
+}
 
+// Assign the data sender role to event grid to allow it to send events to the topic
+resource vehicleteleemetrycustomtopicroleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(subscription().id, vehicleteleemetrycustomtopic.id, eventGridDataSenderRoleDefinition.id) // Name must be deterministic
+  scope: vehicleteleemetrycustomtopic
+  properties: {
+    roleDefinitionId: eventGridDataSenderRoleDefinition.id
+    principalId: eventGridNamespace.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Create the rest of the resources
+/**
+module eventhub '../TelemetryPlatform/EventHub.bicep' = {
+  name: 'eventhub'
+  params: {
+    eventHubNamespaceName: 'eh-${rgUniqueString}'
+    eventHubDeadletterName: 'deadletter'
+    eventHubSku: 'Standard'
+    eventHubLocation: rgLocation
+  }
+ }
+
+module appinsights '../TelemetryPlatform/AppInsights.bicep' = {
+  name: 'appinsights'
+   params: {
+     opsname: 'ops-${rgUniqueString}'
+     appinsname: 'appins-${rgUniqueString}'
+     location: rgLocation
+   }
+ }
+
+module azurefunc '../TelemetryPlatform/AzureFunction.bicep' = {
+  name: 'azurefunc'
+  params: {
+     appInsightsInstrumentationKey: appinsights.outputs.appInsightsInstrKey
+     appName: 'functions-${rgUniqueString}'
+     appPlanName: 'appplan-${rgUniqueString}'
+     location: rgLocation
+  }
+}
+**/
 

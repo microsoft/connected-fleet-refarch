@@ -1,36 +1,42 @@
-# Microsoft Connected Fleet Reference Architecture 
+# Microsoft connected fleets reference architecture
 
-Welcome to the Microsoft Connected Fleet Reference Architecture.   The reference architecture is designed to demonstrate the integration from the vehicle through Azure & Dataverse with two main layers: the telemetry platform and the fleet integration layer:
+Welcome to the Microsoft Connected Fleet Reference Architecture
 
-![High Level Architecture](./docs/images//HighLevelArchitecture.png)
+This sample code implements the concepts described in the [connected fleets reference architecture](https://learn.microsoft.com/azure/architecture/industries/automotive/automotive-connected-fleets)  in the Microsoft Learn website.
 
-| Layer |  Description  |
-|---|---|
-| **Vehicle Connectivity**  | Connectivity between device to cloud is supported through various patterns incluing Eclipse SDV, Embeded Telematics Control Units and OBD-II dongles.   Typically, these vehicle devices commuicate to the cloud using MQTT and/or HTTPS.    |
-| **Mobility Services**  | The Mobility Serivces layers is responsible for handling hyper-scale secure connectivity, telemetry ingestion, command sending, etc. This layer handles everything from vehicle status updates to vehicle events, such as crashes, maintenance needs, and other critical events.  This layer also integrates with the Fleet Integration layer for communication into back-end services  |
-| **Line of Business Integration**  | This layer receives information via the Fleet Integration Layer and stores the information into Azure Synapse, Data Verse (using Dynamics 365 Field Service) and can be extended using Dynamics 365 and/or Power Platform  |
+![High Level Architecture](./docs/images/high-level-architecture.svg)
 
-The initial release of the Connected Fleet Reference Architecture is focused on 3 key components:
+The connected fleets reference archtiecture covers concepts such as:
 
+- Telemetry platform to communicate to vehicles and devices
+- Fleet integration to harmonize data and route messages to the right services
+- Data analytics to create insights based on the vehicle and business data
+- Business integration to provide customization using low-code / no-code
+- Business operations for managing vehicles, devices, tasks and personnel.
 
-
-1. **Mobility Services Telemetry Platform** - a lightweight sample application to ingest MQTT data from the vehicle, parse and send to the Fleet Integration layer.   This sample is meant to be replaced with a fully functional Connected Vehicle/Fleet solution.
-
-1. **Fleet Integration** - The ability to standardize the import of vehicle telemetry and vehicle events into Azure Synapse and the Microsoft DataVerse. This integration enables seamless connectivity from the vehicle all the way to business integration, providing real-time insights into fleet performance and productivity.
-
-1. **Integration with Dataverse, Power Platform and Dynamics 365 Field Service** - Leveraging the out of box entities of D365 Field Service to store IoT Devices, Assets and Alerts for vehicle events.
+The reference architecture also describes several integration points, where 3rd party applications can consume and share data.
 
 ## Available Capabilities
 
-This private preview provides the following capabilities
+The initial release of the Connected Fleet Reference Architecture is focused on 3 key components:
 
-![High Level Architecture](./docs/images/CapabilitiesOverview.svg)
+![High Level Architecture](./docs/images/capabilities-overview.svg)
+
+1. **Mobility Services Telemetry Platform** - a lightweight sample application to ingest MQTT data from the vehicle, parse and send to the Fleet Integration layer.   This sample is meant to be replaced with a fully functional Connected Vehicle/Fleet solution.
+
+1. **Fleet Integration** - The ability to standardize the import of vehicle telemetry and vehicle events into Analytics and Business Integration. This integration enables seamless connectivity from the vehicle all the way to business integration, providing real-time insights into fleet performance and productivity.
+
+1. **Integration with Dataverse, Power Platform and Dynamics 365 Field Service** - Leveraging the out of box entities of D365 Field Service to store IoT Devices, Assets and Alerts for vehicle events.
+
+This sample code provides the following capabilities:
 
 - Mobility Services Telemetry Platform.
   - Cloud based Event grid with the MQTT broker feature.
-  - Azure Functions to receive device to cloud messages and send Vehicle Events and Vehicle Status updates to the Fleet Integration Layer.
-  - BICEP script templates to create the dependent components Azure.
-- Fleet Integration Layer.
+  - Azure Functions to process device to cloud messages and send Vehicle Events and Vehicle Status updates to the Fleet Integration Layer.
+  - Generation of test certificates for the broker and devices
+  - Deployment script templates to create the dependent components Azure.
+  - Sample MQTT client that transmits telemetry for the test devices
+- Fleet Integration.
   - Event Hub to receive Vehicle Events and Vehicle Status updates.
   - Azure Function to connect into Dataverse and persist Vehicle Event Data.
   - Azure Data Explorer service to save Vehicle Status updates and supporting Vehicle Event Data.
