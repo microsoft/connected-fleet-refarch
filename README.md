@@ -37,7 +37,7 @@ This sample code provides the following capabilities:
   - Deployment script templates to create the dependent components Azure.
   - Sample MQTT client that transmits telemetry for the test devices
 - Fleet Integration.
-  - Event Hub to receive Vehicle Events and Vehicle Status updates.
+  - Event Hub to receive [Vehicle Events](./docs/EventMessages.md) and Vehicle Status updates.
   - Azure Function to connect into Dataverse and persist Vehicle Event Data.
   - Azure Data Explorer service to save Vehicle Status updates and supporting Vehicle Event Data.
   - Azure Data Explorer Ingestion Function to parse incoming event hub data and persist into tables.
@@ -65,7 +65,6 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.

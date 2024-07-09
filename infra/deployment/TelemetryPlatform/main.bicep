@@ -31,7 +31,6 @@ module eventgrid './EventGrid.bicep' = {
  }
 }
 
-
 module eventhub './EventHub.bicep' = {
   name: 'eventhub'
   params: {

@@ -33,8 +33,8 @@ resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-prev
   }
 }
 
-output vehicletelemetrycustomtopicid string = vehicletelemetrycustomtopic.id
-
+@description('The name of the Event Grid custom topic. ')
+output vehicleTelemetryCustomTopicName string = vehicletelemetrycustomtopic.name
 
 // Create an Event Grid Namespace with MQTT Enabled
 // The Event Grid has a System assigned identity to enable routing

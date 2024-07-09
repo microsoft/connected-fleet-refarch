@@ -1,6 +1,9 @@
 # Deploying the Telemetry Platform Functions
 
-This document covers how to build, deploy and configure the Azure Functions for the Telemetry Platform.
+This document covers how to build, deploy and configure the Azure Functions for the Telemetry Platform. These functions process vehicle telemetry (status and events).
+
+Events are defined by a [JSON message that contains an id, the type of event](../../../docs/EventMessages.md), and associated metadata.
+
 
 ![Deployment Diagram](FunctionDeploymentOverview.svg)
 
