@@ -1,6 +1,19 @@
-# Instructions for the Environment setup
+# Setting up the Telemetry Platform
 
-In this step you will create the necessary test certificates for the Event Grid MQTT broker and deploy all resources to Azure.
+In this step you will create the necessary test certificates for the Event Grid MQTT broker and deploy all required Telmemetry Platform resources to Azure.
+
+## Deployment Artifacts
+
+The following resources are included in the deployment:
+
+- Event Grid
+- Event Grid Topic
+- Function App
+- App Service plan
+- Storage Account
+- Event Hubs namespace
+- Application Insights
+- Operational Insights
 
 ## Create test certificates
 
@@ -20,7 +33,7 @@ chmod 700 ./cert-gen/certGen.sh
 ./generate-certificates.sh
 ```
 
-## BICEP Instructions
+## Execute the biceps deployment scripts
 
 - login to your Azure account and select your subscription
 

@@ -1,4 +1,5 @@
 param rgLocation string = resourceGroup().location
+param adxSkuName string = 'Dev(No SLA)_Standard_E2a_v4'
 
 var rgUniqueString = uniqueString(resourceGroup().id)
 
@@ -36,7 +37,7 @@ module full './EventHubAndADX.bicep' = {
     eventHubAFConsumerGroupName: 'afvehicleeventscg'
     adxName: 'adx${rgUniqueString}'
     adxLocation: rgLocation
-    adxSkuName: 'Dev(No SLA)_Standard_E2a_v4'
+    adxSkuName: adxSkuName
     adxSkuCapacity: 1
     adxSkuTier: 'Basic'
     adxIdentityType: 'SystemAssigned'
