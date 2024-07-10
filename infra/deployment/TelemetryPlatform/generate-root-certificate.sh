@@ -15,17 +15,6 @@ function warn_only_once()
     [ ! -z "$TERM" ] && tput sgr0
 }
 
-
-function generate_ca_cert_file()
-{
-    local file_path="${1}"
-    local cert_value="\"-----BEGIN CERTIFICATE-----\\n${2}\\n-----END CERTIFICATE-----\""
-
-    echo "{" >> $file_path
-    echo "    \"encodedCertificate\": $cert_value" >> $file_path
-    echo "}" >> $file_path
-}
-
 pushd ./cert-gen
 
 # Check if the CA certificate exists. If it does, warn and exit
@@ -34,15 +23,7 @@ if [ -f ./certs/azure-mqtt-test-only.intermediate.cert ]; then
     exit 0
 fi
 
-
 ./certGen.sh create_root_and_intermediate
-
-./certGen.sh create_leaf_certificate_from_intermediate device01
-./certGen.sh create_leaf_certificate_from_intermediate device02
-./certGen.sh create_leaf_certificate_from_intermediate device03
-./certGen.sh create_leaf_certificate_from_intermediate device04
-./certGen.sh create_leaf_certificate_from_intermediate device05
-./certGen.sh create_leaf_certificate_from_intermediate service01
 
 popd
 
