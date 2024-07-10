@@ -6,7 +6,7 @@ This sample code implements the concepts described in the [connected fleets refe
 
 ![High Level Architecture](./docs/images/high-level-architecture.svg)
 
-The connected fleets reference archtiecture covers concepts such as:
+The connected fleets reference architecture covers concepts such as:
 
 - Telemetry platform to communicate to vehicles and devices
 - Fleet integration to harmonize data and route messages to the right services
