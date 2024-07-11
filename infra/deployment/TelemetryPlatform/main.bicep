@@ -1,6 +1,35 @@
 param rgLocation string = resourceGroup().location
 
+param eventGridName string = 'vehicletelemetry'
+
 var rgUniqueString = uniqueString(resourceGroup().id)
+
+module eventgrid './EventGrid.bicep' = {
+  name: 'eventgrid'
+  params: {
+    rgLocation: rgLocation
+    eventGridName: eventGridName
+    deviceNames: [
+      'device01'
+      'device02'
+      'device03'
+      'device04'
+      'device05'
+    ]
+  }
+ }
+ 
+ module permissions './Permissions.bicep' = {
+  name: 'permissions'
+  dependsOn: [
+    eventgrid
+  ]
+  params: {
+    rgLocation: rgLocation
+    eventGridName: eventGridName
+    eventGridNamespaceName: eventgrid.outputs.eventGridNamespaceName
+ }
+}
 
 module eventhub './EventHub.bicep' = {
   name: 'eventhub'

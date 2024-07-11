@@ -360,3 +360,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Generated certificates
+infra/deployment/TelemetryPlatform/cert-gen

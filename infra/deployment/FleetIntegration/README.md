@@ -1,28 +1,47 @@
-# Introduction 
-This deployment directory contains the BICEP scripts to deploy the base Fleet Integration Layer
+# Setting up the Fleet Integration layer
+
+In this step we will deploy the resources required for the fleet integration layer
 
 ## Deployment Artifacts
 
 The following resources are included in the deployment:
 
-- Resource Group
-- Application Insights
-- Operational Insights
-- App Service Plan
-- Storage Account
-- Logic App
 - Event Hub Namespace (2 Event Hubs)
 - Azure Data Explorer
+- Function App
+- App Service Plan
+- Storage Account
+- Application Insights
+- Operational Insights
 
-## Instructions
+## Execute the biceps deployment scripts
 
-1. Create a Resource Group in the Azure Portal to have the resources deployed into  
+- login to your Azure account and select your subscription
 
-2. Execute the main.bicep file using the syntax:
+``` bash
+az login
+```
 
-        az deployment group create --resource-group <FleetResourceGroup> --template-file ./main.bicep 
+- [Create a resource group](https://learn.microsoft.com/cli/azure/manage-azure-groups-azure-cli#create-a-resource-group) for the deployment in a region
 
-    For example:
+``` bash
+az group create --name <ResourceGroupName> --location <mylocation>
+```
 
-        az deployment group create --resource-group FleetLayerDev --template-file ./main.bicep 
+For example:
 
+``` bash
+    az group create --name fleetintegration --location eastus
+```
+
+Execute the main.bicep refering to your resource group
+
+``` bash
+    az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
+```
+
+For example:
+
+``` bash
+    az deployment group create --resource-group fleetintegration --template-file ./main.bicep
+```

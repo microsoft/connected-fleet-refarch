@@ -1,4 +1,0 @@
-{
-    "description": "Backend Services Group",
-    "query": "attributes.type = 'service'"
-}

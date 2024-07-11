@@ -1,3 +1,4 @@
+
 @description('The name of the function app that you wish to create.')
 param appName string 
 
@@ -96,3 +97,23 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
     httpsOnly: true
   }
 }
+
+/**
+
+resource topicSubscription 'Microsoft.EventGrid/topics/eventSubscriptions@2024-06-01-preview' = {    
+  name: 'vehicletelemetry/vehiclestatus'
+  properties: {
+      
+      destination: {
+        endpointType: 'AzureFunction'        
+        properties:{
+          
+        }
+      }
+      filter: {
+        subjectEndsWith: 'vehiclestatus'
+      }
+  }
+}
+
+**/
