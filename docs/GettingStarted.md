@@ -75,7 +75,7 @@ The following resources are included in the deployment:
 1. Make the scripts executable:
 
 ```bash
-chmod 700 generate-root-certificates.sh
+chmod 700 generate-root-certificate.sh
 chmod 700 generate-client-certificates.sh
 chmod 700 ./cert-gen/certGen.sh
 ```
@@ -88,7 +88,7 @@ Create a test root and intermediate certificate.
 > Make sure to run this script **only once** to avoid discrepancies between the generated certificates and the configuration files.
 
 ```bash
-./generate-root-certificates.sh
+./generate-root-certificate.sh
 ```
 
 Create certificates for several test clients
