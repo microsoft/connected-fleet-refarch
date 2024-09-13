@@ -70,9 +70,9 @@ The following resources are included in the deployment:
 
 #### Create test certificates
 
-1. Change your directory to infra/deployment/TelemetryPlatform
+- Change your directory to ```infra/deployment/TelemetryPlatform```
 
-1. Make the scripts executable:
+- Make the scripts executable:
 
 ```bash
 chmod 700 generate-root-certificate.sh
@@ -80,7 +80,7 @@ chmod 700 generate-client-certificates.sh
 chmod 700 ./cert-gen/certGen.sh
 ```
 
-1. Generate the certificates
+- Generate the certificates
 
 Create a test root and intermediate certificate.
 
@@ -117,7 +117,7 @@ For example:
     az group create --name telemetryplatform --location eastus
 ```
 
-Execute the main.bicep refering to your resource group
+- Execute the main.bicep refering to your resource group
 
 ``` bash
     az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
@@ -147,11 +147,7 @@ The following resources will be created as part of the deployment:
 
 #### Execute fleet integration biceps deployment scripts
 
-- login to your Azure account and select your subscription
-
-``` bash
-az login
-```
+- Change your directory to ```infra/deployment/FleetIntegration```
 
 - [Create a resource group](https://learn.microsoft.com/cli/azure/manage-azure-groups-azure-cli#create-a-resource-group) for the deployment in a region
 
@@ -165,7 +161,7 @@ For example:
     az group create --name fleetintegration --location eastus
 ```
 
-Execute the main.bicep refering to your resource group
+- Execute the main.bicep refering to your resource group
 
 ``` bash
     az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
@@ -235,4 +231,12 @@ If you no longer need the resources, use Azure CLI or the Azure Portal to delete
 
     az group delete --name <yourfleetintegrationrgname>
 
+```
+
+for example
+
+```bash
+    az group delete --name telemetryplatform
+
+    az group delete --name fleetintegration
 ```

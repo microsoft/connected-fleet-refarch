@@ -1,5 +1,5 @@
 param rgLocation string = resourceGroup().location
-param adxSkuName string = 'Dev(No SLA)_Standard_E2a_v4'
+param adxSkuName string = 'Dev(No SLA)_Standard_D11_v2'
 
 var rgUniqueString = uniqueString(resourceGroup().id)
 

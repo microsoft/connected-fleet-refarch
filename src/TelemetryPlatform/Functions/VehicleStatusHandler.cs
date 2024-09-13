@@ -58,7 +58,7 @@ public static class VehicleStatusHandler
                 {
                     Source = SourceName,
                     Message = "Unable to serialize MQTT Data",
-                    Tag = "16b6a4f2-6706-4e61-b5ca-0e8963b1f259",
+                    Tag = "mqtt-data-serialize-failed",
                     Content = content,
                     AdditionalProperties = eventGridEvent,
                     Timestamp = DateTime.UtcNow
@@ -74,7 +74,7 @@ public static class VehicleStatusHandler
             DeadLetterMessage deadLetterMessage = new DeadLetterMessage()
                 {
                     Source = SourceName,
-                    Tag = "3e70aacf-effe-43e1-a406-3c5c7b752f00",
+                    Tag = "event-grid-message-process-failed",
                     Message = $"Failed to process EventGrid Message: {ex.Message}",
                     ExceptionStackTrace = ex.StackTrace,
                     AdditionalProperties = eventGridEvent,

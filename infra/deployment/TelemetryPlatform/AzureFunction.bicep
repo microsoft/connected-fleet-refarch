@@ -1,4 +1,6 @@
 
+param eventGridName string
+
 @description('The name of the function app that you wish to create.')
 param appName string 
 
@@ -80,7 +82,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '~10'
+          value: '~14'
         }
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
@@ -98,16 +100,67 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-/**
 
-resource topicSubscription 'Microsoft.EventGrid/topics/eventSubscriptions@2024-06-01-preview' = {    
-  name: 'vehicletelemetry/vehiclestatus'
+resource vehicleventhandler 'Microsoft.Web/sites/functions@2023-12-01' = {
+  parent: functionApp
+  name: 'VehicleEventHandler'    
   properties: {
-      
+    config: {
+      disabled: false      
+      bindings: [
+        {
+          name: 'eventGridEvent'
+          type: 'EventGridTrigger'
+          direction: 'in'
+          authLevel: 'function'
+        }
+      ]
+    }
+    files: {
+      'run.csx': loadTextContent('run.csx')
+    }
+  }
+}
+
+// Create the relevant functions
+resource vehiclestatushandler 'Microsoft.Web/sites/functions@2023-12-01' = {
+  parent: functionApp
+  name: 'VehicleStatusHandler'  
+  properties: {
+    config: {
+      disabled: false
+      bindings: [
+        {
+          name: 'eventGridEvent'
+          type: 'EventGridTrigger'
+          direction: 'in'
+          authLevel: 'function'
+        }
+      ]
+    }
+    files: {
+      'run.csx': loadTextContent('run.csx')
+    }
+  }  
+}
+
+// Get a reference to the custom topic
+resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' existing = {
+  name: eventGridName
+}
+
+
+
+// Subscribe to the vehicle status topic
+resource vehicleStatusTopicSubscription 'Microsoft.EventGrid/topics/eventSubscriptions@2024-06-01-preview' = {    
+  name: 'vehiclestatus'
+  parent: vehicletelemetrycustomtopic
+  properties: {
+      eventDeliverySchema: 'CloudEventSchemaV1_0'
       destination: {
-        endpointType: 'AzureFunction'        
+        endpointType: 'AzureFunction'
         properties:{
-          
+          resourceId: vehiclestatushandler.id
         }
       }
       filter: {
@@ -116,4 +169,20 @@ resource topicSubscription 'Microsoft.EventGrid/topics/eventSubscriptions@2024-0
   }
 }
 
-**/
+// Subscribe to the vehicle status topic
+resource vehicleEventTopicSubscription 'Microsoft.EventGrid/topics/eventSubscriptions@2024-06-01-preview' = {    
+  name: 'vehicleevent'
+  parent: vehicletelemetrycustomtopic
+  properties: {
+      eventDeliverySchema: 'CloudEventSchemaV1_0'
+      destination: {
+        endpointType: 'AzureFunction'
+        properties:{
+          resourceId: vehiclestatushandler.id
+        }
+      }
+      filter: {
+        subjectEndsWith: 'vehicleevent'
+      }
+  }
+}

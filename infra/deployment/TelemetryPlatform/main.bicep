@@ -53,6 +53,7 @@ module eventhub './EventHub.bicep' = {
  module azurefunc './AzureFunction.bicep' = {
   name: 'azurefunc'
   params: {
+     eventGridName: eventGridName
      appInsightsInstrumentationKey: appinsights.outputs.appInsightsInstrKey
      appName: 'functions-${rgUniqueString}'
      appPlanName: 'appplan-${rgUniqueString}'

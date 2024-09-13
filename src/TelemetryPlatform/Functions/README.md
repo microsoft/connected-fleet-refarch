@@ -4,7 +4,6 @@ This document covers how to build, deploy and configure the Azure Functions for 
 
 Events are defined by a [JSON message that contains an id, the type of event](../../../docs/EventMessages.md), and associated metadata.
 
-
 ![Deployment Diagram](FunctionDeploymentOverview.svg)
 
 The Telemetry Platform has two functions
