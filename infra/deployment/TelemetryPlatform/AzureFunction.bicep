@@ -1,6 +1,8 @@
 
 param eventGridTopicName string
 
+param eventHubNamespaceName string
+
 @description('The name of the function app that you wish to create.')
 param appName string 
 
@@ -19,11 +21,6 @@ param storageAccountType string = 'Standard_LRS'
 param location string = resourceGroup().location
 
 @description('The language worker runtime to load in the function app.')
-@allowed([
-  'node'
-  'dotnet'
-  'java'
-])
 param runtime string = 'dotnet'
 
 @description('The instrumentation key for application insights logging')
@@ -33,6 +30,12 @@ var functionAppName = appName
 var hostingPlanName = appPlanName
 var storageAccountName = 'stg${uniqueString(resourceGroup().id)}'
 var functionWorkerRuntime = runtime
+
+
+// Get the event hub where we will send the data
+resource eventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' existing = {
+  name: eventHubNamespaceName
+}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   name: storageAccountName
@@ -92,6 +95,10 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: functionWorkerRuntime
         }
+        {
+          name: 'EventHubConnection__fullyQualifiedNamespace'
+          value: '${eventHubNamespace.name}.servicebus.windows.net'
+        }
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
@@ -149,8 +156,6 @@ resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-prev
   name: eventGridTopicName
 }
 
-
-
 // Subscribe to the vehicle status topic
 resource vehicleStatusTopicSubscription 'Microsoft.EventGrid/topics/eventSubscriptions@2024-06-01-preview' = {    
   name: 'vehiclestatus'
@@ -184,5 +189,22 @@ resource vehicleEventTopicSubscription 'Microsoft.EventGrid/topics/eventSubscrip
       filter: {
         subjectEndsWith: 'vehicleevent'
       }
+  }
+}
+
+
+// Allow Azure functions to send data to EH in the resource group
+resource eventHubDataSenderRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
+  scope: subscription()
+  name: '2b629674-e913-4c01-ae53-ef4638d8f975'
+}
+
+resource azurefunctionroleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(subscription().id, vehicletelemetrycustomtopic.id, eventHubDataSenderRoleDefinition.id) // Name must be deterministic
+  scope: eventHubNamespace
+  properties: {
+    roleDefinitionId: eventHubDataSenderRoleDefinition.id
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
   }
 }

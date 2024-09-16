@@ -6,6 +6,8 @@ param eventGridTopicName string = 'vehicletelemetry'
 
 var eventGridNamespaceName =  'evgns-${resWorkload}-${rgUniqueString}'
 
+var eventHubNamespaceName = 'evh-${resWorkload}-${rgUniqueString}'
+
 var rgUniqueString = uniqueString(resourceGroup().id)
 
 
@@ -40,7 +42,7 @@ module eventgrid './EventGrid.bicep' = {
 module eventhub './EventHub.bicep' = {
   name: 'eventhub'
   params: {
-    eventHubNamespaceName: 'evh-${resWorkload}-${rgUniqueString}'
+    eventHubNamespaceName: eventHubNamespaceName
     eventHubDeadletterName: 'deadletter'
     eventHubVehicleEventsName: 'vehicleevents'
     eventHubVehicleStatusName: 'vehiclestatus'
@@ -62,9 +64,11 @@ module eventhub './EventHub.bicep' = {
   name: 'azurefunctions'
   params: {
      eventGridTopicName: eventGridTopicName
+     eventHubNamespaceName: 'evh-${resWorkload}-${rgUniqueString}'
      appInsightsInstrumentationKey: appinsights.outputs.appInsightsInstrKey
      appName: 'func-${resWorkload}-${rgUniqueString}'
      appPlanName: 'asp-${resWorkload}-${rgUniqueString}'
+
      location: rgLocation
   }
  }
