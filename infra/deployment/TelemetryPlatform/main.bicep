@@ -1,14 +1,20 @@
 param rgLocation string = resourceGroup().location
 
-param eventGridName string = 'vehicletelemetry'
+param resWorkload string = 'telplat'
+
+param eventGridTopicName string = 'vehicletelemetry'
+
+var eventGridNamespaceName =  'evgns-${resWorkload}-${rgUniqueString}'
 
 var rgUniqueString = uniqueString(resourceGroup().id)
+
 
 module eventgrid './EventGrid.bicep' = {
   name: 'eventgrid'
   params: {
     rgLocation: rgLocation
-    eventGridName: eventGridName
+    eventGridNamespaceName: eventGridNamespaceName
+    eventGridTopicName: eventGridTopicName
     deviceNames: [
       'device01'
       'device02'
@@ -26,16 +32,18 @@ module eventgrid './EventGrid.bicep' = {
   ]
   params: {
     rgLocation: rgLocation
-    eventGridName: eventGridName
-    eventGridNamespaceName: eventgrid.outputs.eventGridNamespaceName
+    eventGridTopicName: eventGridTopicName
+    eventGridNamespaceName: eventGridNamespaceName
  }
 }
 
 module eventhub './EventHub.bicep' = {
   name: 'eventhub'
   params: {
-    eventHubNamespaceName: 'eh-${rgUniqueString}'
+    eventHubNamespaceName: 'evh-${resWorkload}-${rgUniqueString}'
     eventHubDeadletterName: 'deadletter'
+    eventHubVehicleEventsName: 'vehicleevents'
+    eventHubVehicleStatusName: 'vehiclestatus'
     eventHubSku: 'Standard'
     eventHubLocation: rgLocation
   }
@@ -44,19 +52,19 @@ module eventhub './EventHub.bicep' = {
  module appinsights './AppInsights.bicep' = {
   name: 'appinsights'
    params: {
-     opsname: 'ops-${rgUniqueString}'
-     appinsname: 'appins-${rgUniqueString}'
+     opsname: 'ops-${resWorkload}-${rgUniqueString}'
+     appinsname: 'appi-${resWorkload}-${rgUniqueString}'
      location: rgLocation
    }
  }
 
  module azurefunc './AzureFunction.bicep' = {
-  name: 'azurefunc'
+  name: 'azurefunctions'
   params: {
-     eventGridName: eventGridName
+     eventGridTopicName: eventGridTopicName
      appInsightsInstrumentationKey: appinsights.outputs.appInsightsInstrKey
-     appName: 'functions-${rgUniqueString}'
-     appPlanName: 'appplan-${rgUniqueString}'
+     appName: 'func-${resWorkload}-${rgUniqueString}'
+     appPlanName: 'asp-${resWorkload}-${rgUniqueString}'
      location: rgLocation
   }
  }

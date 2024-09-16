@@ -1,5 +1,5 @@
 
-param eventGridName string
+param eventGridTopicName string
 
 @description('The name of the function app that you wish to create.')
 param appName string 
@@ -146,7 +146,7 @@ resource vehicleventhandler 'Microsoft.Web/sites/functions@2023-12-01' = {
 
 // Get a reference to the custom topic
 resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' existing = {
-  name: eventGridName
+  name: eventGridTopicName
 }
 
 

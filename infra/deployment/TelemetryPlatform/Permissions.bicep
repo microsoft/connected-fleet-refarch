@@ -2,11 +2,11 @@ param rgLocation string
 
 param eventGridNamespaceName string
 
-param eventGridName string
+param eventGridTopicName string
 
 // Get a reference to the custom topic
 resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' existing = {
-  name: eventGridName
+  name: eventGridTopicName
 }
 
 

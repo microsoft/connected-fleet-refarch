@@ -1,7 +1,9 @@
 param rgLocation string = resourceGroup().location
 
 // The name that will be assigned all resources related to the event grid
-param eventGridName string = 'vehicletelemetry'
+param eventGridNamespaceName string
+
+param eventGridTopicName string = 'vehicletelemetry'
 
 // Array that contains the devices that will be registered to the event hub
 param deviceNames array = [
@@ -11,9 +13,6 @@ param deviceNames array = [
   'device04'
   'device05'
 ]
-
-// A unique string based on the resource group name
-var rgUniqueString = uniqueString(resourceGroup().id)
 
 // The Intermediate Test CA Certificate, used to validate the devices connecting to the Event Grid Namespace
 var caCert = trim(loadTextContent('../TelemetryPlatform/cert-gen/certs/azure-mqtt-test-only.intermediate.cert.pem'))
@@ -25,7 +24,7 @@ var caCert = trim(loadTextContent('../TelemetryPlatform/cert-gen/certs/azure-mqt
 
 // Creation of a custom topic
 resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' = {
-  name: eventGridName
+  name: eventGridTopicName
   location: rgLocation  
   properties: {
     publicNetworkAccess: 'Enabled'
@@ -39,7 +38,7 @@ output vehicleTelemetryCustomTopicName string = vehicletelemetrycustomtopic.name
 // Create an Event Grid Namespace with MQTT Enabled
 // The Event Grid has a System assigned identity to enable routing
 resource eventGridNamespace 'Microsoft.EventGrid/namespaces@2024-06-01-preview' = {
-  name: '${eventGridName}-${rgUniqueString}'
+  name: eventGridNamespaceName
   location: rgLocation
   tags: {
     environment: 'dev'
@@ -86,9 +85,6 @@ resource vehicleteleemetrycustomtopicroleassignment 'Microsoft.Authorization/rol
     principalType: 'ServicePrincipal'
   }
 }
-
-
-output eventGridNamespaceName string = eventGridNamespace.name
 
 // Add the TestCA Certificate to the Event Grid Namespace
 resource eventGridNamespaceCACertificate 'Microsoft.EventGrid/namespaces/caCertificates@2024-06-01-preview' = {

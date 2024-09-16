@@ -114,19 +114,19 @@ az group create --name <ResourceGroupName> --location <mylocation>
 For example:
 
 ``` bash
-    az group create --name telemetryplatform --location eastus
+az group create --name telemetryplatform --location eastus
 ```
 
 - Execute the main.bicep refering to your resource group
 
 ``` bash
-    az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
+az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
 ```
 
 For example:
 
 ``` bash
-    az deployment group create --resource-group telemetryplatform --template-file ./main.bicep
+az deployment group create --resource-group telemetryplatform --template-file ./main.bicep
 ```
 
 ### Deploy the fleet integration layer
@@ -158,19 +158,19 @@ az group create --name <ResourceGroupName> --location <mylocation>
 For example:
 
 ``` bash
-    az group create --name fleetintegration --location eastus
+az group create --name fleetintegration --location eastus
 ```
 
 - Execute the main.bicep refering to your resource group
 
 ``` bash
-    az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
+az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
 ```
 
 For example:
 
 ``` bash
-    az deployment group create --resource-group fleetintegration --template-file ./main.bicep
+az deployment group create --resource-group fleetintegration --template-file ./main.bicep
 ```
 
 ### Deploy the Azure functions
@@ -191,13 +191,13 @@ Vehicle Signal Specification (VSS) from COVESA.
 To build, use
 
 ```bash
-    dotnet build
+dotnet build
 ```
 
 To execute, use
 
 ```bash
-    dotnet run
+dotnet run
 ```
 
 If you prefer to use containers, you can build the Test Client in a container using:
@@ -227,16 +227,16 @@ docker push <yourregistry>.azurecr.io/test-client-image
 If you no longer need the resources, use Azure CLI or the Azure Portal to delete the resource groups and its resources
 
 ```bash
-    az group delete --name <yourtelemetryplatformrgname>
+az group delete --name <yourtelemetryplatformrgname>
 
-    az group delete --name <yourfleetintegrationrgname>
+az group delete --name <yourfleetintegrationrgname>
 
 ```
 
 for example
 
 ```bash
-    az group delete --name telemetryplatform
+az group delete --name telemetryplatform
 
-    az group delete --name fleetintegration
+az group delete --name fleetintegration
 ```
