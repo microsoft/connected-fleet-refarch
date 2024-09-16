@@ -8,7 +8,12 @@ using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-public static void Run([EventGridTrigger]JObject eventGridEvent, ILogger log)
+public static async Task Run(
+    [EventGridTrigger]JObject eventGridEvent,
+    ILogger log//,
+    //IAsyncCollector<string> deadLetterEvents,
+    //IAsyncCollector<string> vehicleStatusEvents
+    )
 {
     log.LogInformation(eventGridEvent.ToString());
 

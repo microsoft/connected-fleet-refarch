@@ -69,31 +69,6 @@ After the command succeeds, you can check the functions deployed using the follo
      az functionapp function list --query "[].{name:name, resource:resourceGroup}" --name functions-yyyyyyyyyyyyy --resource-group rg-telemetryplatform --output table
 ```
 
-* Configure the consumption of messages from the event Event Grid Topic
-
-  - Open your Event Grid Topic (by default: telemetryingestion) and go to the blade "Event Subscriptions"
-  - Create an event subscription for *vehicle status*. Set the following parameters
-
-    | Tab | Property | Value |
-    |-----|------|-------|
-    | Basics  | Name | vehiclestatus |
-    | Basics  | Event Schema | Cloud Event Schema v1.0 |
-    | Basics  | Endpoint type | Azure Function |
-    | Basics  | Endpoint | Select your function app functions-yyyyyyyyyyyyy and the function VehicleStatusHandler |
-    | Filters | Enable subject filtering | True |
-    | Filters |Subject ends with | vehiclestatus |
-
-  - Create an event subscription for *vehicle events*. Set the following parameters
-
-    | Tab | Property | Value |
-    |-----|------|-------|
-    | Basics  | Name | vehicleevent |
-    | Basics  | Event Schema | Cloud Event Schema v1.0 |
-    | Basics  | Endpoint type | Azure Function |
-    | Basics  | Endpoint | Select your function app functions-yyyyyyyyyyyyy and the function VehicleEventHandler |
-    | Filters | Enable subject filtering | True |
-    | Filters |Subject ends with | vehicleevent |
-
 * Configure the event hubs shared access policies that will be used by the Function Apps to publish the processed messages. You can list the Event Hub namespaces using the following command
 
 ```bash
@@ -109,7 +84,7 @@ eh-zzzzzzzzzzzzz  eg-fleetintegration                  eastus      Microsoft.Eve
 eh-wwwwwwwwwwwww  eg-telemetryplatform                 eastus      Microsoft.EventHub/namespaces
 ```
 
-The Event Hubs namespace in the telemetry platform is used for deadletter messages. It contains an Event Hubs instance called *deadletter*. Create a send Shared Access Policy at the namespace level with the name *deadletter* and a Send claim. Note the Connection string primary key. 
+The Event Hubs namespace in the telemetry platform is used for deadletter messages. It contains an Event Hubs instance called *deadletter*. Create a send Shared Access Policy at the namespace level with the name *deadletter* and a Send claim. Note the Connection string primary key.
 
 You can use the following command to create the access policy in the Telemetry Platform layer (replace the namespace name and the resource group with your values):
 

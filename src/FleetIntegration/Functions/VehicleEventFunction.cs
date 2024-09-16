@@ -38,7 +38,7 @@ public class VehicleEventHandler
     {
         this.log = log;
 
-        LogInformation("b828353e-fed2-43c3-9aeb-b1103944eecf", $"Vehicle Event Function Started Processing {vehicleEvents.Length.ToString()} Events");
+        LogInformation("vehicle-event-processing", $"Vehicle Event Function Started Processing {vehicleEvents.Length.ToString()} Events");
 
         List<Task> events = new List<Task>();        
         foreach (EventData eventData in vehicleEvents)
@@ -47,19 +47,19 @@ public class VehicleEventHandler
         }
         await Task.WhenAll(events.ToArray());
 
-        LogInformation("e46c67ad-b2e0-473b-9fe6-40d931ef297a", $"Vehicle Event Function Finished Processing {vehicleEvents.Length.ToString()} Events");
+        LogInformation("vehicle-event-finished", $"Vehicle Event Function Finished Processing {vehicleEvents.Length.ToString()} Events");
     }
 
     private async Task ProcessEvent(EventData eventData)
     {
         string content = Encoding.UTF8.GetString(eventData.EventBody);
-        LogInformation("329d3a3a-ca9d-4fa5-9424-4df57dd1d3ee", content);
+        LogInformation("vehicle-event-process", content);
 
         var vehicleEvent = JsonConvert.DeserializeObject<VehicleEvent>(content);
 
         if (string.IsNullOrEmpty(vehicleEvent?.EventSubType))
         {
-            LogWarning("d47ead71-b1cb-4b47-ada3-d3c084890d45", $"Invalid Event or SubType not found");
+            LogWarning("vehicle-event-subtype-invalid", $"Invalid Event or SubType not found");
             return;
         }
 
@@ -69,14 +69,14 @@ public class VehicleEventHandler
         
         await Task.WhenAll(assetTask, deviceTask);
 
-        Guid assetId = assetTask.Result;
-        Guid deviceId = deviceTask.Result;
+        Guid assetId = await assetTask;
+        Guid deviceId = await deviceTask;
 
         // If any of the FKs are missing, exit
         if (assetId == Guid.Empty ||
             deviceId == Guid.Empty)
         {
-            LogWarning("7a8157c3-c1af-4435-8202-e59757abcc09", $"Failed to retrieve the required foreign keys");
+            LogWarning("vehicle-event-asset-invalid", $"Failed to retrieve the required foreign keys");
             return;
         }
 
@@ -92,11 +92,11 @@ public class VehicleEventHandler
             eventEntity[Settings.IoTAlertEntityAlertData] = JsonConvert.SerializeObject(vehicleEvent);
                         
             Guid eventId = svc.Create(eventEntity);
-            LogInformation("ece8b860-0523-4aea-bbde-45f79e903352", $"Successfully created IoT Alert with DataVerse EventId: {eventId.ToString()}");
+            LogInformation("vehicle-event-iot-alert-success", $"Successfully created IoT Alert with DataVerse EventId: {eventId.ToString()}");
         }
         catch (Exception ex)
         {
-            LogError(ex, "7a8680f6-6f0b-4d4a-a3db-fd4d7ee127b8", "Failed to create IoT Alert record");
+            LogError(ex, "vehicle-event-iot-alert-failure", "Failed to create IoT Alert record");
         }
     }
 
@@ -108,17 +108,17 @@ public class VehicleEventHandler
 
         if (string.IsNullOrEmpty(vehicleEvent?.VehicleId))
         {
-            LogWarning("cf572643-2de5-457c-9ec9-acf010201184", "vehicleId field is empty");
+            LogWarning("vehicle-event-vehicleid-empty", "vehicleId field is empty");
             return Guid.Empty;
         }
 
-        LogInformation("238115fb-bb6e-4fb8-933d-abaabf2724cd", $"Looking up asset: {vehicleEvent.VehicleId}");
+        LogInformation("vehicle-event-asset-lookup", $"Looking up asset: {vehicleEvent.VehicleId}");
 
         Entity lookupEntity = await LookupEntity(entityName, queryColumn, vehicleEvent.VehicleId, entityKey);
 
         if (lookupEntity == null)
         {
-            LogWarning("655b4b59-5dd8-4e32-9650-87608d258594", $"Could not find asset: {vehicleEvent.VehicleId}, creating new entity.");
+            LogWarning("vehicle-event-asset-lookup-failure", $"Could not find asset: {vehicleEvent.VehicleId}, creating new entity.");
 
             Entity eventTypeEntity = new Entity(entityName);
             eventTypeEntity[queryColumn] = vehicleEvent.VehicleId;
@@ -127,7 +127,7 @@ public class VehicleEventHandler
         }
         else
         {
-            LogInformation("f583482e-0cb5-4a39-89b1-eeb85b1867ac", $"Found asset: {vehicleEvent.VehicleId} with ID: {lookupEntity.Id.ToString()}");
+            LogInformation("vehicle-event-asset-lookup-success", $"Found asset: {vehicleEvent.VehicleId} with ID: {lookupEntity.Id.ToString()}");
             return lookupEntity.Id;
         }
     }
@@ -140,17 +140,17 @@ public class VehicleEventHandler
 
         if (string.IsNullOrEmpty(vehicleEvent?.VehicleId))
         {
-            LogWarning("e84e1fff-c851-42cf-b11a-1468cc33e141", "vehicleId field is empty");
+            LogWarning("vehicle-event-upsertiotdevice-vehicleid-empty", "vehicleId field is empty");
             return Guid.Empty;
         }
 
-        LogInformation("8549ad66-b97e-434e-a0c9-206f84bea0f2", $"Looking up IoT Device: {vehicleEvent.VehicleId}");
+        LogInformation("vehicle-event-upsertiotdevice-iotdevice-lookup", $"Looking up IoT Device: {vehicleEvent.VehicleId}");
 
         Entity lookupEntity = await LookupEntity(entityName, queryColumn, vehicleEvent.VehicleId, entityKey);
 
         if (lookupEntity == null)
         {
-            LogWarning("503a9820-41e9-40df-96b9-0c68437d19cb", $"Could not find IoT Device: {vehicleEvent.VehicleId}, creating new entity.");
+            LogWarning("vehicle-event-upsertiotdevice-iotdevice-lookup-failure", $"Could not find IoT Device: {vehicleEvent.VehicleId}, creating new entity.");
 
             Entity eventTypeEntity = new Entity(entityName);
             eventTypeEntity[queryColumn] = vehicleEvent.VehicleId;
@@ -159,7 +159,7 @@ public class VehicleEventHandler
         }
         else
         {
-            LogInformation("8aff87c1-a9d8-4102-943e-21f3390560f8", $"Found IoT Device: {vehicleEvent.VehicleId} with ID: {lookupEntity.Id.ToString()}");
+            LogInformation("vehicle-event-upsertiotdevice-iotdevice-lookup-success", $"Found IoT Device: {vehicleEvent.VehicleId} with ID: {lookupEntity.Id.ToString()}");
             return lookupEntity.Id;
         }
     }

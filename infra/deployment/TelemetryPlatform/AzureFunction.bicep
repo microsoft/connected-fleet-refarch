@@ -100,6 +100,28 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
+// Create the relevant functions
+
+resource vehiclestatushandler 'Microsoft.Web/sites/functions@2023-12-01' = {
+  parent: functionApp
+  name: 'VehicleStatusHandler'  
+  properties: {
+    config: {
+      disabled: false
+      bindings: [
+        {
+          name: 'eventGridEvent'
+          type: 'EventGridTrigger'
+          direction: 'in'
+          authLevel: 'function'
+        }
+      ]
+    }
+    files: {
+      'run.csx': loadTextContent('vehiclestatus-dummy.csx')
+    }
+  }  
+}
 
 resource vehicleventhandler 'Microsoft.Web/sites/functions@2023-12-01' = {
   parent: functionApp
@@ -117,31 +139,9 @@ resource vehicleventhandler 'Microsoft.Web/sites/functions@2023-12-01' = {
       ]
     }
     files: {
-      'run.csx': loadTextContent('run.csx')
+      'run.csx': loadTextContent('vehicleevents-dummy.csx')
     }
   }
-}
-
-// Create the relevant functions
-resource vehiclestatushandler 'Microsoft.Web/sites/functions@2023-12-01' = {
-  parent: functionApp
-  name: 'VehicleStatusHandler'  
-  properties: {
-    config: {
-      disabled: false
-      bindings: [
-        {
-          name: 'eventGridEvent'
-          type: 'EventGridTrigger'
-          direction: 'in'
-          authLevel: 'function'
-        }
-      ]
-    }
-    files: {
-      'run.csx': loadTextContent('run.csx')
-    }
-  }  
 }
 
 // Get a reference to the custom topic
