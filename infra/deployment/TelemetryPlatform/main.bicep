@@ -1,15 +1,17 @@
 param rgLocation string = resourceGroup().location
 
-param resWorkload string = 'telplat'
+@description('The short name of the telemetry platform workload.')
+@maxLength(3)
+param resWorkload string = 'tlp'
 
+@description('The name for the custom event grid topic')
 param eventGridTopicName string = 'vehicletelemetry'
+
+var rgUniqueString = uniqueString(resourceGroup().id)
 
 var eventGridNamespaceName =  'evgns-${resWorkload}-${rgUniqueString}'
 
 var eventHubNamespaceName = 'evh-${resWorkload}-${rgUniqueString}'
-
-var rgUniqueString = uniqueString(resourceGroup().id)
-
 
 module eventgrid './EventGrid.bicep' = {
   name: 'eventgrid'
@@ -71,7 +73,6 @@ module eventhub './EventHub.bicep' = {
      appInsightsInstrumentationKey: appinsights.outputs.appInsightsInstrKey
      appName: 'func-${resWorkload}-${rgUniqueString}'
      appPlanName: 'asp-${resWorkload}-${rgUniqueString}'
-
      location: rgLocation
   }
  }
