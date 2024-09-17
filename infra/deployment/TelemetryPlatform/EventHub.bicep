@@ -2,7 +2,7 @@ param eventHubSku string
 param eventHubNamespaceName string
 param eventHubDeadletterName string = 'deadletter'
 param eventHubVehicleStatusName string = 'vehiclestatus'
-param eventHubVehicleEventsName string = 'vehicleevents'
+param eventHubVehicleEventsName string = 'vehicleevent'
 param eventHubLocation string = resourceGroup().location
 
 resource eventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' = {

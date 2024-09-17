@@ -21,9 +21,9 @@ public static class VehicleEventHandler
     [FunctionName("VehicleEventHandler")]
     public static async Task Run(
         [EventGridTrigger]CloudEvent eventGridEvent, 
-        [EventHub("vehiclestatus", Connection = "VehicleStatusEventHubConnectionString")]IAsyncCollector<string> vehicleStatusEvents,
-        [EventHub("vehicleevent", Connection = "VehicleEventEventHubConnectionString")]IAsyncCollector<string> vehicleEventEvents,
-        [EventHub("deadletter", Connection = "TelemetryPlatformEventHubConnectionString")]IAsyncCollector<string> deadLetterEvents,
+        [EventHub("vehiclestatus", Connection = "EventHubConnection")]IAsyncCollector<string> vehicleStatusEvents,
+        [EventHub("vehicleevent", Connection = "EventHubConnection")]IAsyncCollector<string> vehicleEventEvents,
+        [EventHub("deadletter", Connection = "EventHubConnection")]IAsyncCollector<string> deadLetterEvents,
         ILogger log)
     {
         log.LogInformation($"VehicleEventHandler Function Started Processing Event");

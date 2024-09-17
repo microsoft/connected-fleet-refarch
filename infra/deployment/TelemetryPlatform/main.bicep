@@ -44,7 +44,7 @@ module eventhub './EventHub.bicep' = {
   params: {
     eventHubNamespaceName: eventHubNamespaceName
     eventHubDeadletterName: 'deadletter'
-    eventHubVehicleEventsName: 'vehicleevents'
+    eventHubVehicleEventsName: 'vehicleevent'
     eventHubVehicleStatusName: 'vehiclestatus'
     eventHubSku: 'Standard'
     eventHubLocation: rgLocation
@@ -62,6 +62,9 @@ module eventhub './EventHub.bicep' = {
 
  module azurefunc './AzureFunction.bicep' = {
   name: 'azurefunctions'
+  dependsOn: [
+    eventgrid
+  ]  
   params: {
      eventGridTopicName: eventGridTopicName
      eventHubNamespaceName: 'evh-${resWorkload}-${rgUniqueString}'

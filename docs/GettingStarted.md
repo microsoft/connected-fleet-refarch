@@ -25,6 +25,7 @@ In the following deployment steps, you will:
 - Install dotnet-sdk-8.0. Read [Install .NET on Linux](https://learn.microsoft.com/en-us/dotnet/core/install/linux) and follow the steps for your distro.
 - Install [Visual Studio Code](https://visualstudio.microsoft.com/)
 - Make sure you have [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt) installed. Run `az --version` to verify. If it's not installed, run the following command to install it:
+- Install the [Azure Functions core tools](https://github.com/Azure/azure-functions-core-tools/blob/v4.x/README.md#linux) to work with Azure functions.
 
 ```bash
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
@@ -129,6 +130,37 @@ For example:
 az deployment group create --resource-group telemetryplatform --template-file ./main.bicep
 ```
 
+#### Deploy the telemetry platform functions
+
+* Change directory to the Telemetry Platform function app directory
+
+```bash
+cd ./src/TelemetryPlatform/Functions
+```
+
+* Deploy the Functions to your Function app instance.
+
+The following command shows you all of the function app resources deployed.
+
+```bash
+az functionapp list --output table
+```
+
+A sample output looks like this
+
+```bash
+Name                     Location    State    ResourceGroup                        DefaultHostName                            AppServicePlan
+-----------------------  ----------  -------  -----------------------------------  -----------------------------------------  ---------------------
+functions-yyyyyyyyyyyyy  East US     Running  rg-telemetryplatform                 functions-yyyyyyyyyyyyy.azurewebsites.net  appplan-yyyyyyyyyyyyy
+
+```
+
+Please note the name of your function app "functions-yyyyyyyyyyyyy" in your *TelemetryPlatform* resource group. Deploy the function app to your function app instance using the following command
+
+```bash
+func azure functionapp publish <functions-yyyy> --dotnet
+```
+
 ### Deploy the fleet integration layer
 
 In this step you will deploy the resources required for the fleet integration layer
@@ -220,6 +252,14 @@ You can push the image to a container registry and run it in an Azure Container 
 docker tag test-client-image <yourregistry>.azurecr.io/test-client-image
 
 docker push <yourregistry>.azurecr.io/test-client-image
+```
+
+### Monitor the behaviour of the azure functions
+
+You can connect to the azure functions streams from the Portal or using  the following command:
+
+```bash
+func azure functionapp logstream <functions-yyyyyyyyyyyyy>
 ```
 
 ## Clean-up

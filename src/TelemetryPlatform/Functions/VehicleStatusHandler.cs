@@ -21,8 +21,8 @@ public static class VehicleStatusHandler
     [FunctionName("VehicleStatusHandler")]
     public static async Task Run(
         [EventGridTrigger]CloudEvent eventGridEvent, 
-        [EventHub("vehiclestatus", Connection = "VehicleStatusEventHubConnectionString")]IAsyncCollector<string> vehicleStatusEvents,
-        [EventHub("deadletter", Connection = "TelemetryPlatformEventHubConnectionString")]IAsyncCollector<string> deadLetterEvents,
+        [EventHub("vehiclestatus", Connection = "EventHubConnection")] IAsyncCollector<string> vehicleStatusEvents,
+        [EventHub("deadletter", Connection = "EventHubConnection")] IAsyncCollector<string> deadLetterEvents,
         ILogger log)
     {
         log.LogInformation($"VehicleStatusHandler Function Started Processing Event");
@@ -31,6 +31,8 @@ public static class VehicleStatusHandler
         {
             // Grab the event data
             string content = eventGridEvent.Data.ToString();
+
+            log.LogInformation($"Event: {content}");
 
             string vehicleId = GetVehicleIdFromSubject(eventGridEvent.Subject);
             if (vehicleId == null)
@@ -45,10 +47,10 @@ public static class VehicleStatusHandler
             if (telemetryMessage != null)
             {
                 VehicleStatus vehicleStatus = CreateVehicleStatus(vehicleId, telemetryMessage, eventGridEvent);
+
+                var vehicleStatusSerialized = JsonConvert.SerializeObject(vehicleStatus);
                
-                log.LogInformation("Sending Message to VehicleStatus Event Hub");
-               
-                await vehicleStatusEvents.AddAsync(JsonConvert.SerializeObject(vehicleStatus));            
+                await vehicleStatusEvents.AddAsync(vehicleStatusSerialized);            
             }
             else
             {
