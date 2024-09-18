@@ -21,16 +21,20 @@ In the following deployment steps, you will:
 ### Preparation
 
 - If you don't have an Azure subscription, you can [create a free account](https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account).
+
 - Install the Windows Subsystem for Linux (WSL2) in your Windows computer or use a suitable Linux Distribution such as Ubuntu 22.04 LTS.
+
 - Install dotnet-sdk-8.0. Read [Install .NET on Linux](https://learn.microsoft.com/en-us/dotnet/core/install/linux) and follow the steps for your distro.
+
 - Install [Visual Studio Code](https://visualstudio.microsoft.com/)
+
 - Make sure you have [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt) installed. Run `az --version` to verify. If it's not installed, run the following command to install it:
-- Install the [Azure Functions core tools](https://github.com/Azure/azure-functions-core-tools/blob/v4.x/README.md#linux) to work with Azure functions.
 
 ```bash
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 ```
 
+- Install the [Azure Functions core tools](https://github.com/Azure/azure-functions-core-tools/blob/v4.x/README.md#linux) to work with Azure functions.
 - Check out the GitHub repository in your environment
 
 ``` bash
@@ -44,7 +48,7 @@ cd connected-fleet-refarch
 code .
 ```
 
-- To simplify development, install the following extensions in Visual Studio Code
+- If you want to modify the function code, install the following extensions in Visual Studio Code to make your life easier.
   - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep): Bicep language support for Visual Studio Code
   - [Azure Functions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions): quickly create, debug, manage, and deploy serverless apps directly from VS Code
 
@@ -58,17 +62,6 @@ In this step you will:
 
 #### Telemetry platform deployment artifacts
 
-The following resources are included in the deployment:
-
-- Event Grid
-- Event Grid Topic
-- Function App
-- App Service plan
-- Storage Account
-- Event Hubs namespace
-- Application Insights
-- Operational Insights
-
 #### Create test certificates
 
 - Change your directory to ```infra/deployment/TelemetryPlatform```
@@ -81,9 +74,7 @@ chmod 700 generate-client-certificates.sh
 chmod 700 ./cert-gen/certGen.sh
 ```
 
-- Generate the certificates
-
-Create a test root and intermediate certificate.
+- Create a test root and intermediate certificate.
 
 > **Warning**
 > Make sure to run this script **only once** to avoid discrepancies between the generated certificates and the configuration files.
@@ -92,42 +83,37 @@ Create a test root and intermediate certificate.
 ./generate-root-certificate.sh
 ```
 
-Create certificates for several test clients
+* Create certificates for the test clients
 
 ```bash
 ./generate-client-certificates.sh
 ```
 
-#### Execute the telemetry platform biceps deployment scripts
+#### Deploy the telemetry platform using biceps
 
-- login to your Azure account and select your subscription
+- login to your Azure account and select your subscription.
 
 ``` bash
 az login
+```
+- export variables with your preferred resource group names and location.
+
+``` bash
+export RG_TELEMETRYPLATFORM=telemetryplatform
+export RG_FLEETINTEGRATION=fleetintegration
+export LOCATION=eastus
 ```
 
 - [Create a resource group](https://learn.microsoft.com/cli/azure/manage-azure-groups-azure-cli#create-a-resource-group) for the deployment in a region
 
 ``` bash
-az group create --name <ResourceGroupName> --location <mylocation>
+az group create --name ${RG_TELEMETRYPLATFORM} --location ${LOCATION}
 ```
 
-For example:
+- Execute the main.bicep targeting your telemetry platform resource group
 
 ``` bash
-az group create --name telemetryplatform --location eastus
-```
-
-- Execute the main.bicep refering to your resource group
-
-``` bash
-az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
-```
-
-For example:
-
-``` bash
-az deployment group create --resource-group telemetryplatform --template-file ./main.bicep
+az deployment group create --resource-group ${RG_TELEMETRYPLATFORM}--template-file ./main.bicep 
 ```
 
 #### Deploy the telemetry platform functions
@@ -138,44 +124,21 @@ az deployment group create --resource-group telemetryplatform --template-file ./
 cd ./src/TelemetryPlatform/Functions
 ```
 
-* Deploy the Functions to your Function app instance.
-
-The following command shows you all of the function app resources deployed.
+* Export a variable with the name of the function app created in the telemetry platform
 
 ```bash
-az functionapp list --output table
+export tpfunctionapp=$(az functionapp list --query "[].name" --resource-group ${RG_TELEMETRYPLATFORM} --output tsv)
 ```
 
-A sample output looks like this
+* Publish the functions to the function app
 
 ```bash
-Name                     Location    State    ResourceGroup                        DefaultHostName                            AppServicePlan
------------------------  ----------  -------  -----------------------------------  -----------------------------------------  ---------------------
-functions-yyyyyyyyyyyyy  East US     Running  rg-telemetryplatform                 functions-yyyyyyyyyyyyy.azurewebsites.net  appplan-yyyyyyyyyyyyy
-
-```
-
-Please note the name of your function app "functions-yyyyyyyyyyyyy" in your *TelemetryPlatform* resource group. Deploy the function app to your function app instance using the following command
-
-```bash
-func azure functionapp publish <functions-yyyy> --dotnet
+func azure functionapp publish ${tpfunctionapp} --dotnet
 ```
 
 ### Deploy the fleet integration layer
 
 In this step you will deploy the resources required for the fleet integration layer
-
-#### Fleet integration deployment artifacts
-
-The following resources will be created as part of the deployment:
-
-- Event Hub Namespace (2 Event Hubs)
-- Azure Data Explorer
-- Function App
-- App Service Plan
-- Storage Account
-- Application Insights
-- Operational Insights
 
 #### Execute fleet integration biceps deployment scripts
 
@@ -184,31 +147,45 @@ The following resources will be created as part of the deployment:
 - [Create a resource group](https://learn.microsoft.com/cli/azure/manage-azure-groups-azure-cli#create-a-resource-group) for the deployment in a region
 
 ``` bash
-az group create --name <ResourceGroupName> --location <mylocation>
+az group create --name ${RG_FLEETINTEGRATION} --location ${LOCATION}
 ```
 
-For example:
+- Get the name of the event hub created in the telemetry platform.
 
 ``` bash
-az group create --name fleetintegration --location eastus
+export tpeventhubname=$(az eventhubs namespace list --resource-group ${RG_TELEMETRYPLATFORM} --query "[].name" --output tsv)
 ```
 
-- Execute the main.bicep refering to your resource group
+- Execute the main.bicep refering to your resource group and using the event hub namespace from the telemetry platform as an argument.
 
 ``` bash
-az deployment group create --resource-group <ResourceGroupName> --template-file ./main.bicep 
+az deployment group create --resource-group ${RG_FLEETINTEGRATION} --template-file ./main.bicep --parameters evhnsTelemetryPlatformNamespaceName=${tpeventhubname}
 ```
 
-For example:
+At this point, you can try out sending messages and the integration with data explorer. The next steps require a dataverse connection.
 
-``` bash
-az deployment group create --resource-group fleetintegration --template-file ./main.bicep
+#### Deploy the telemetry platform functions for connection to the dataverse
+
+This step requires a Dynamics 365 installation with Field Service.
+
+* Change directory to the Fleet Integration function app directory
+
+```bash
+cd ./src/FleetIntegration/Functions
 ```
 
-### Deploy the Azure functions
+* Export a variable with the name of the function app created in the telemetry platform
 
-- [Deploy and configure Telemetry Platform](../src/TelemetryPlatform/Functions/README.md) deploys and configures the message processing code
-- [Deploy and configure Fleet Integration](../src/FleetIntegration/Functions/README.md) deploys and configures the dataverse integration code
+```bash
+export fifunctionapp=$(az functionapp list --query "[].name" --resource-group ${RG_FLEETINTEGRATION} --output tsv)
+```
+
+* Publish the functions to the function app
+
+```bash
+func azure functionapp publish ${fifunctionapp} --dotnet
+```
+
 
 ## Try it out
 
@@ -260,6 +237,31 @@ You can connect to the azure functions streams from the Portal or using  the fol
 
 ```bash
 func azure functionapp logstream <functions-yyyyyyyyyyyyy>
+```
+
+### Visualize the messages in Azure Data Explorer
+
+You can query and visualize the messages in Azure Data explorer.
+
+* Open the Azure Portal
+* Navigate to the Azure Data Explorer instance in your fleet integration resource group
+* Go to Data > Query to open the browing interface
+
+You can now use KQL statements to visualize the data, for example:
+
+Visualize raw messages
+
+``` kql
+RawVehicleStatus
+| take 100
+```
+
+Show the last position of the vehicles in a map
+
+``` kql
+VehicleStatusHarmonized
+| summarize arg_max(timestamp, longitude, latitude) by vehicleId
+| render scatterchart with (kind=map)
 ```
 
 ## Clean-up

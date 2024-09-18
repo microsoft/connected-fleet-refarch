@@ -32,13 +32,13 @@ public static class VehicleStatusHandler
             // Grab the event data
             string content = eventGridEvent.Data.ToString();
 
-            log.LogInformation($"Event: {content}");
-
             string vehicleId = GetVehicleIdFromSubject(eventGridEvent.Subject);
             if (vehicleId == null)
             {
                 throw new ApplicationException("Unable to parse VehicleId from Subject");
             }
+
+            log.LogInformation($"Vehicle id: {vehicleId}");
 
             // Deserialize into a Telemetry Message to validate format
             TelemetryMessage telemetryMessage = JsonConvert.DeserializeObject<TelemetryMessage>(content);

@@ -5,6 +5,7 @@ param eventHubADXConsumerGroupName string
 param adxVehicleStatusDBName string
 param adxVehicleStatusTable string
 param rgTelemetryPlatform string
+param rgLocation string
 
 
 // Retrieve the event hub namespace, event hub and consumer group from the telemetry platform
@@ -23,6 +24,7 @@ resource adxCluster 'Microsoft.Kusto/clusters@2022-12-29' existing = {
 
   resource adxVehicleStatusDB 'databases' = {
     name: adxVehicleStatusDBName
+    location: rgLocation
     kind:'ReadWrite'
     properties: {
       softDeletePeriod: 'P7D'
@@ -39,7 +41,7 @@ resource adxCluster 'Microsoft.Kusto/clusters@2022-12-29' existing = {
     
     resource adxDataConnection 'dataConnections' = {
       name: 'vehicleStatusIngestion'
-      location: resourceGroup().location
+      location: rgLocation
       kind: 'EventHub'
       dependsOn: [ 
         adxInitDB

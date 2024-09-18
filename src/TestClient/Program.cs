@@ -25,7 +25,7 @@ class Program
 
         // Read the x509 certificate path from the environment variable CERT_PATH and set to a default if null
         string x509pem = Environment.GetEnvironmentVariable("CERTS_PATH") == null ? @"../../infra/deployment/TelemetryPlatform/cert-gen/certs/" : Environment.GetEnvironmentVariable("CERTS_PATH");
-        string x509key = Environment.GetEnvironmentVariable("CERTS_PATH") == null ? @"../../infra/deployment/TelemetryPlatform/cert-gen/certs/" : Environment.GetEnvironmentVariable("CERTS_PATH"); 
+        string x509key = Environment.GetEnvironmentVariable("CERTS_PATH") == null ? @"../../infra/deployment/TelemetryPlatform/cert-gen/certs/" : Environment.GetEnvironmentVariable("CERTS_PATH");         
         string[] deviceNames = { "device01", "device02", "device03", "device04", "device05"}; // Add more device names as needed
 
         List<Task> clientTasks = new List<Task>();
@@ -78,7 +78,7 @@ class Program
                 // Replace the <replace> placeholder in the json file with the current time
                 string updatedEntry = entry.Replace("<replace>", currentTime);
                 
-                Console.WriteLine($"Device '{deviceName}': Publishing {updatedEntry}");
+                Console.WriteLine($"Device '{deviceName}': Publishing {currentTime}");
                 var puback = await mqttClient.PublishStringAsync($"{deviceName}.mqtt.contoso.com/vehiclestatus", updatedEntry);
                 Console.WriteLine(puback.ReasonString);
                 await Task.Delay(updateInterval);

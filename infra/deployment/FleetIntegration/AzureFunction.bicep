@@ -15,13 +15,6 @@ param storageAccountType string = 'Standard_LRS'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('The language worker runtime to load in the function app.')
-@allowed([
-  'node'
-  'dotnet'
-  'java'
-])
-param runtime string = 'dotnet'
 
 @description('The instrumentation key for application insights logging')
 param appInsightsInstrumentationKey string
@@ -29,7 +22,6 @@ param appInsightsInstrumentationKey string
 var functionAppName = appName
 var hostingPlanName = appPlanName
 var storageAccountName = 'stg${uniqueString(resourceGroup().id)}'
-var functionWorkerRuntime = runtime
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   name: storageAccountName
@@ -74,20 +66,24 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           value: toLower(functionAppName)
         }
         {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'dotnet'
+        }  
+        {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
         }
         {
+          name: 'FUNCTIONS_INPROC_NET8_ENABLED'
+          value: '1'
+        } 
+        {
           name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '~10'
+          value: '~14'
         }
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: appInsightsInstrumentationKey
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: functionWorkerRuntime
         }
       ]
       ftpsState: 'FtpsOnly'

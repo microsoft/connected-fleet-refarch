@@ -20,7 +20,6 @@ var eventHubADXConsumerGroupName = 'adxvehiclestatuscg'
 var eventHubVehicleStatusName = 'vehiclestatus'
 
 // Create the App Insights and Ops Insights resources for monitoring
-/*
 module appinsights './AppInsights.bicep' = {
   name: 'appinsightsDeploy'
    params: {
@@ -29,9 +28,7 @@ module appinsights './AppInsights.bicep' = {
      location: rgLocation
    }
  }
-*/
 
-/*
 module azurefunc './AzureFunction.bicep' = {
   name: 'azurefunc'
   params: {
@@ -41,7 +38,6 @@ module azurefunc './AzureFunction.bicep' = {
      location: rgLocation
   }
 }
-*/
 
 // Create the ADX Cluster Index
 module adxcluster './AzureDataExplorer.bicep' = {
@@ -84,6 +80,7 @@ module adxDatabase './AzureDataExplorerDatabase.bicep' = {
       eventHubVehicleStatusName: eventHubVehicleStatusName
       evhnsTelemetryPlatformNamespaceName: evhnsTelemetryPlatformNamespaceName
       rgTelemetryPlatform: rgTelemetryPlatform
+      rgLocation: rgLocation
     }
 
 }

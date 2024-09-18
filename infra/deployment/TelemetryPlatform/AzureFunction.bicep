@@ -100,7 +100,6 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
 }
 
 // Create the relevant functions
-
 resource vehiclestatushandler 'Microsoft.Web/sites/functions@2023-12-01' = {
   parent: functionApp
   name: 'VehicleStatusHandler'  
