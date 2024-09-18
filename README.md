@@ -18,30 +18,30 @@ The reference architecture also describes several integration points, where 3rd 
 
 ## Available Capabilities
 
-The initial release of the Connected Fleet Reference Architecture is focused on 3 key components:
+This sample code enables the following functionality
 
 ![High Level Architecture](./docs/images/capabilities-overview.svg)
 
-1. **Mobility Services Telemetry Platform** - a lightweight sample application to ingest MQTT data from the vehicle, parse and send to the Fleet Integration layer.   This sample is meant to be replaced with a fully functional Connected Vehicle/Fleet solution.
+1. **Mobility Services Telemetry Platform** - a lightweight sample application to ingest MQTT data from the vehicle, parse and send to the Fleet Integration layer. The functions can be customized to change the processing logic.
 
-1. **Fleet Integration** - The ability to standardize the import of vehicle telemetry and vehicle events into Analytics and Business Integration. This integration enables seamless connectivity from the vehicle all the way to business integration, providing real-time insights into fleet performance and productivity.
+1. **Fleet Integration** - The ability to standardize the import of vehicle telemetry and vehicle events into Analytics and Business Integration.
 
 1. **Integration with Dataverse, Power Platform and Dynamics 365 Field Service** - Leveraging the out of box entities of D365 Field Service to store IoT Devices, Assets and Alerts for vehicle events.
 
-This sample code provides the following capabilities:
+This sample code provides the following services:
 
-- Mobility Services Telemetry Platform.
-  - Cloud based Event grid with the MQTT broker feature.
-  - Azure Functions to process device to cloud messages and send Vehicle Events and Vehicle Status updates to the Fleet Integration Layer.
-  - Generation of test certificates for the broker and devices
+- Test client
+  - Sample MQTT client that transmits telemetry for 5 test devices with realistic sample data per vehicle
+- Mobility Services Telemetry Platform. 
+  - Generation of test certificates for the broker and 5 test devices
+  - Cloud based Event grid with the MQTT broker feature enabled with 5 sample clients preconfigured.
+  - Azure Functions to process device to cloud messages for vehicle status and vehicle events.
   - Deployment script templates to create the dependent components Azure.
-  - Sample MQTT client that transmits telemetry for the test devices
-- Fleet Integration.
   - Event Hub to receive [Vehicle Events](./docs/EventMessages.md) and Vehicle Status updates.
-  - Azure Function to connect into Dataverse and persist Vehicle Event Data.
+- Fleet Integration.
   - Azure Data Explorer service to save Vehicle Status updates and supporting Vehicle Event Data.
   - Azure Data Explorer Ingestion Function to parse incoming event hub data and persist into tables.
-  - BICEP script templates to create the dependent components Azure.
+  - Azure Function to connect into Dataverse and persist Vehicle Event Data.  
 - Dynamics 365 Field Service Integration.
   - Storing of Vehicle Event critical event data into D365 Field Service entities including IoT Assets, Devices and Alerts.
 

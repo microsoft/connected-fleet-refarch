@@ -62,9 +62,5 @@
     {
       "name": "DataVerse_Uri",
       "value": "<yourdataverse_uri>"
-    },
-    {
-      "name": "VehicleEventEHConnectionString",
-      "value": "<EHConnectionString>"
     }
 ]

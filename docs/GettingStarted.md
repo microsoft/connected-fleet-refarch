@@ -118,11 +118,7 @@ az deployment group create --resource-group ${RG_TELEMETRYPLATFORM}--template-fi
 
 #### Deploy the telemetry platform functions
 
-* Change directory to the Telemetry Platform function app directory
-
-```bash
-cd ./src/TelemetryPlatform/Functions
-```
+* Change directory to ```./src/TelemetryPlatform/Functions```
 
 * Export a variable with the name of the function app created in the telemetry platform
 
@@ -162,30 +158,15 @@ export tpeventhubname=$(az eventhubs namespace list --resource-group ${RG_TELEME
 az deployment group create --resource-group ${RG_FLEETINTEGRATION} --template-file ./main.bicep --parameters evhnsTelemetryPlatformNamespaceName=${tpeventhubname}
 ```
 
-At this point, you can try out sending messages and the integration with data explorer. The next steps require a dataverse connection.
+> [!NOTE] 
+> At this point, you can try out sending messages and the integration with Azure Data Explorer. The sample event handling function will log events.
 
 #### Deploy the telemetry platform functions for connection to the dataverse
 
-This step requires a Dynamics 365 installation with Field Service.
+> [!NOTE]
+> This step requires a Dynamics 365 installation with Field Service. You can skip this step in case you don't have an installation available.
 
-* Change directory to the Fleet Integration function app directory
-
-```bash
-cd ./src/FleetIntegration/Functions
-```
-
-* Export a variable with the name of the function app created in the telemetry platform
-
-```bash
-export fifunctionapp=$(az functionapp list --query "[].name" --resource-group ${RG_FLEETINTEGRATION} --output tsv)
-```
-
-* Publish the functions to the function app
-
-```bash
-func azure functionapp publish ${fifunctionapp} --dotnet
-```
-
+Follow the instructions in [Dataverse Integration](DataverseIntegration.md) to automatically create ```IoT Event``` entities.
 
 ## Try it out
 
@@ -197,15 +178,16 @@ of Event Grid, and send a JSON payload every second per device.
 The payloads can be found in the ./SamplePayloads directory. It consists of a JSON array that contains several values, harmonized using the
 Vehicle Signal Specification (VSS) from COVESA.
 
-To build, use
+Change your directory to ```./src/TestClient``` and build the client
 
 ```bash
 dotnet build
 ```
 
-To execute, use
+To execute, set an environment variable with the MQTT host name and run using dotnet.
 
 ```bash
+export gw_url=$(az eventgrid namespace list --resource-group ${RG_TELEMETRYPLATFORM} --query [].topicSpacesConfiguration.hostname --output tsv)
 dotnet run
 ```
 
@@ -215,20 +197,13 @@ If you prefer to use containers, you can build the Test Client in a container us
 docker build -t test-client-image -f Dockerfile ../..
 ```
 
-> The command references the top level directory of the project, so we can include the generated certs automatically.
+> [!WARNING] 
+> The image will include the client certificates. This is not intented for production use.
 
-Then use the following command to run locally (make sure to pass your Event Grid MQTT broker url):
-
-```bash
-docker run -it -e gw_url="<yournamespace>-1.ts.eventgrid.azure.net" --rm test-client-image
-```
-
-You can push the image to a container registry and run it in an Azure Container Instance
+Then use the following command to run locally.
 
 ```bash
-docker tag test-client-image <yourregistry>.azurecr.io/test-client-image
-
-docker push <yourregistry>.azurecr.io/test-client-image
+docker run -it -e gw_url=${gw_url} --rm test-client-image
 ```
 
 ### Monitor the behaviour of the azure functions
@@ -236,7 +211,8 @@ docker push <yourregistry>.azurecr.io/test-client-image
 You can connect to the azure functions streams from the Portal or using  the following command:
 
 ```bash
-func azure functionapp logstream <functions-yyyyyyyyyyyyy>
+export tpfunctionapp=$(az functionapp list --query "[].name" --resource-group ${RG_TELEMETRYPLATFORM} --output tsv)
+func azure functionapp logstream ${tpfunctionapp}
 ```
 
 ### Visualize the messages in Azure Data Explorer
@@ -245,7 +221,7 @@ You can query and visualize the messages in Azure Data explorer.
 
 * Open the Azure Portal
 * Navigate to the Azure Data Explorer instance in your fleet integration resource group
-* Go to Data > Query to open the browing interface
+* Go to Data > Query to open the Azure Data Explorer query interface
 
 You can now use KQL statements to visualize the data, for example:
 
@@ -269,16 +245,7 @@ VehicleStatusHarmonized
 If you no longer need the resources, use Azure CLI or the Azure Portal to delete the resource groups and its resources
 
 ```bash
-az group delete --name <yourtelemetryplatformrgname>
+az group delete --name ${RG_TELEMETRYPLATFORM}
 
-az group delete --name <yourfleetintegrationrgname>
-
-```
-
-for example
-
-```bash
-az group delete --name telemetryplatform
-
-az group delete --name fleetintegration
+az group delete --name ${RG_FLEETINTEGRATION}
 ```

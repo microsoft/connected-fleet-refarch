@@ -32,7 +32,7 @@ public class VehicleEventHandler
     public async Task Run(
         [EventHubTrigger("vehicleevent",
             ConsumerGroup = "afvehicleeventscg",
-            Connection = "VehicleEventEHConnectionString")]
+            Connection = "EventHubConnection")]
         EventData[] vehicleEvents,
         ILogger log)
     {
