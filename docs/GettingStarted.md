@@ -3,11 +3,12 @@
 ## Pre-requisites
 
 - An Azure Subscription with the necessary permissions to create resources and application registrations.
-- A Microsoft Dataverse Environment.
-- A Dynamics 365 installation with Field Service.
 - A Linux or WSL2 Environment.
 - A GitHub client.
 - Visual Studio Code.
+- (Optional) A Microsoft Dataverse Environment.
+- (Optional) A Dynamics 365 installation with Field Service.
+
 
 ## Deployment Steps
 
