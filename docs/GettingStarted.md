@@ -77,7 +77,7 @@ chmod 700 ./cert-gen/certGen.sh
 
 - Create a test root and intermediate certificate.
 
-> **Warning**
+> [!Warning]
 > Make sure to run this script **only once** to avoid discrepancies between the generated certificates and the configuration files.
 
 ```bash
@@ -159,8 +159,7 @@ export tpeventhubname=$(az eventhubs namespace list --resource-group ${RG_TELEME
 az deployment group create --resource-group ${RG_FLEETINTEGRATION} --template-file ./main.bicep --parameters evhnsTelemetryPlatformNamespaceName=${tpeventhubname}
 ```
 
-> [!NOTE] 
-> At this point, you can try out sending messages and the integration with Azure Data Explorer. The sample event handling function will log events.
+You can try out sending messages and the integration with Azure Data Explorer.
 
 #### Deploy the telemetry platform functions for connection to the dataverse
 
@@ -219,6 +218,9 @@ func azure functionapp logstream ${tpfunctionapp}
 ### Visualize the messages in Azure Data Explorer
 
 You can query and visualize the messages in Azure Data explorer.
+
+> [!NOTE]
+> Default streaming ingestion configuration in Azure Data Explorer is 5 minutes.
 
 * Open the Azure Portal
 * Navigate to the Azure Data Explorer instance in your fleet integration resource group
