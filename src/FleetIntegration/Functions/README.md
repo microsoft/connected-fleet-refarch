@@ -1,6 +1,6 @@
 # Deploying the Fleet Integration Functions
 
-This document covers how to build, deploy and configure the Azure Functions for the Telemetry Platform.
+This document describes the fleet integration functions.
 
 ![Deployment Diagram](FunctionDeploymentOverview.svg)
 

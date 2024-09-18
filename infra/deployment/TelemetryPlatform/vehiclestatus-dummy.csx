@@ -10,9 +10,7 @@ using Newtonsoft.Json.Linq;
 
 public static async Task Run(
     [EventGridTrigger]JObject eventGridEvent,
-    ILogger log//,
-    //IAsyncCollector<string> deadLetterEvents,
-    //IAsyncCollector<string> vehicleStatusEvents
+    ILogger log
     )
 {
     log.LogInformation(eventGridEvent.ToString());
