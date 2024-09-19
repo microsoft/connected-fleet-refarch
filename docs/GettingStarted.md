@@ -210,7 +210,7 @@ docker run -it -e gw_url=${gw_url} --rm test-client-image
 
 ### Monitor the behaviour of the functions
 
-You can connect to the Azure functions log streams from the Portal or using  the following command:
+You can connect to the Azure Functions log stream from the portal or by using the following command:
 
 ```bash
 export tpfunctionapp=$(az functionapp list --query "[].name" --resource-group ${RG_TELEMETRYPLATFORM} --output tsv)
