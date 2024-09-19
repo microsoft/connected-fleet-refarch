@@ -190,7 +190,7 @@ resource eventHubDataSenderRoleDefinition 'Microsoft.Authorization/roleDefinitio
 }
 
 resource azurefunctionroleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(subscription().id, vehicletelemetrycustomtopic.id, eventHubDataSenderRoleDefinition.id) // Name must be deterministic
+  name: guid(functionApp.id, vehicletelemetrycustomtopic.id, eventHubDataSenderRoleDefinition.id) // Name must be deterministic
   scope: eventHubNamespace
   properties: {
     roleDefinitionId: eventHubDataSenderRoleDefinition.id
