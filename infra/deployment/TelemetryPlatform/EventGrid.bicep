@@ -1,7 +1,9 @@
 param rgLocation string = resourceGroup().location
 
 // The name that will be assigned all resources related to the event grid
-param eventGridName string = 'vehicletelemetry'
+param eventGridNamespaceName string
+
+param eventGridTopicName string = 'vehicletelemetry'
 
 // Array that contains the devices that will be registered to the event hub
 param deviceNames array = [
@@ -11,9 +13,6 @@ param deviceNames array = [
   'device04'
   'device05'
 ]
-
-// A unique string based on the resource group name
-var rgUniqueString = uniqueString(resourceGroup().id)
 
 // The Intermediate Test CA Certificate, used to validate the devices connecting to the Event Grid Namespace
 var caCert = trim(loadTextContent('../TelemetryPlatform/cert-gen/certs/azure-mqtt-test-only.intermediate.cert.pem'))
@@ -25,8 +24,8 @@ var caCert = trim(loadTextContent('../TelemetryPlatform/cert-gen/certs/azure-mqt
 
 // Creation of a custom topic
 resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' = {
-  name: eventGridName
-  location: rgLocation
+  name: eventGridTopicName
+  location: rgLocation  
   properties: {
     publicNetworkAccess: 'Enabled'
     inputSchema: 'CloudEventSchemaV1_0'
@@ -39,7 +38,7 @@ output vehicleTelemetryCustomTopicName string = vehicletelemetrycustomtopic.name
 // Create an Event Grid Namespace with MQTT Enabled
 // The Event Grid has a System assigned identity to enable routing
 resource eventGridNamespace 'Microsoft.EventGrid/namespaces@2024-06-01-preview' = {
-  name: '${eventGridName}-${rgUniqueString}'
+  name: eventGridNamespaceName
   location: rgLocation
   tags: {
     environment: 'dev'
@@ -66,7 +65,26 @@ resource eventGridNamespace 'Microsoft.EventGrid/namespaces@2024-06-01-preview' 
   }
 }
 
-output eventGridNamespaceName string = eventGridNamespace.name
+// Enable managed identity for the namespace
+// https://learn.microsoft.com/en-us/azure/event-grid/mqtt-routing-to-azure-functions-portal#enable-managed-identity-for-the-namespace
+
+// Create a reference to the Event Grid Data sender role definition
+@description('This is the built-in Event Grid Data Sender role. See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles')
+resource eventGridDataSenderRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
+  scope: subscription()
+  name: 'd5a91429-5739-47e2-a06b-3470a27159e7'
+}
+
+// Assign the data sender role to event grid to allow it to send events to the topic
+resource vehicleteleemetrycustomtopicroleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(subscription().id, vehicletelemetrycustomtopic.id, eventGridDataSenderRoleDefinition.id) // Name must be deterministic
+  scope: vehicletelemetrycustomtopic
+  properties: {
+    roleDefinitionId: eventGridDataSenderRoleDefinition.id
+    principalId: eventGridNamespace.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
 
 // Add the TestCA Certificate to the Event Grid Namespace
 resource eventGridNamespaceCACertificate 'Microsoft.EventGrid/namespaces/caCertificates@2024-06-01-preview' = {
@@ -137,23 +155,3 @@ resource devices 'Microsoft.EventGrid/namespaces/clients@2024-06-01-preview' = [
 }]
 
 
-// Enable managed identity for the namespace
-// https://learn.microsoft.com/en-us/azure/event-grid/mqtt-routing-to-azure-functions-portal#enable-managed-identity-for-the-namespace
-
-// Create a reference to the Event Grid Data sender role definition
-@description('This is the built-in Event Grid Data Sender role. See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles')
-resource eventGridDataSenderRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
-  scope: subscription()
-  name: 'd5a91429-5739-47e2-a06b-3470a27159e7'
-}
-
-// Assign the data sender role to event grid to allow it to send events to the topic
-resource vehicleteleemetrycustomtopicroleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(subscription().id, vehicletelemetrycustomtopic.id, eventGridDataSenderRoleDefinition.id) // Name must be deterministic
-  scope: vehicletelemetrycustomtopic
-  properties: {
-    roleDefinitionId: eventGridDataSenderRoleDefinition.id
-    principalId: eventGridNamespace.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}

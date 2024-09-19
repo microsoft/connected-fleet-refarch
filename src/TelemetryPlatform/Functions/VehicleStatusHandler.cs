@@ -21,8 +21,8 @@ public static class VehicleStatusHandler
     [FunctionName("VehicleStatusHandler")]
     public static async Task Run(
         [EventGridTrigger]CloudEvent eventGridEvent, 
-        [EventHub("vehiclestatus", Connection = "VehicleStatusEventHubConnectionString")]IAsyncCollector<string> vehicleStatusEvents,
-        [EventHub("deadletter", Connection = "TelemetryPlatformEventHubConnectionString")]IAsyncCollector<string> deadLetterEvents,
+        [EventHub("vehiclestatus", Connection = "EventHubConnection")] IAsyncCollector<string> vehicleStatusEvents,
+        [EventHub("deadletter", Connection = "EventHubConnection")] IAsyncCollector<string> deadLetterEvents,
         ILogger log)
     {
         log.LogInformation($"VehicleStatusHandler Function Started Processing Event");
@@ -38,6 +38,8 @@ public static class VehicleStatusHandler
                 throw new ApplicationException("Unable to parse VehicleId from Subject");
             }
 
+            log.LogInformation($"Vehicle id: {vehicleId}");
+
             // Deserialize into a Telemetry Message to validate format
             TelemetryMessage telemetryMessage = JsonConvert.DeserializeObject<TelemetryMessage>(content);
 
@@ -45,10 +47,10 @@ public static class VehicleStatusHandler
             if (telemetryMessage != null)
             {
                 VehicleStatus vehicleStatus = CreateVehicleStatus(vehicleId, telemetryMessage, eventGridEvent);
+
+                var vehicleStatusSerialized = JsonConvert.SerializeObject(vehicleStatus);
                
-                log.LogInformation("Sending Message to VehicleStatus Event Hub");
-               
-                await vehicleStatusEvents.AddAsync(JsonConvert.SerializeObject(vehicleStatus));            
+                await vehicleStatusEvents.AddAsync(vehicleStatusSerialized);            
             }
             else
             {
@@ -58,7 +60,7 @@ public static class VehicleStatusHandler
                 {
                     Source = SourceName,
                     Message = "Unable to serialize MQTT Data",
-                    Tag = "16b6a4f2-6706-4e61-b5ca-0e8963b1f259",
+                    Tag = "mqtt-data-serialize-failed",
                     Content = content,
                     AdditionalProperties = eventGridEvent,
                     Timestamp = DateTime.UtcNow
@@ -74,7 +76,7 @@ public static class VehicleStatusHandler
             DeadLetterMessage deadLetterMessage = new DeadLetterMessage()
                 {
                     Source = SourceName,
-                    Tag = "3e70aacf-effe-43e1-a406-3c5c7b752f00",
+                    Tag = "event-grid-message-process-failed",
                     Message = $"Failed to process EventGrid Message: {ex.Message}",
                     ExceptionStackTrace = ex.StackTrace,
                     AdditionalProperties = eventGridEvent,

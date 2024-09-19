@@ -1,14 +1,24 @@
 param rgLocation string = resourceGroup().location
 
-param eventGridName string = 'vehicletelemetry'
+@description('The short name of the telemetry platform workload.')
+@maxLength(3)
+param resWorkload string = 'tlp'
+
+@description('The name for the custom event grid topic')
+param eventGridTopicName string = 'vehicletelemetry'
 
 var rgUniqueString = uniqueString(resourceGroup().id)
+
+var eventGridNamespaceName =  'evgns-${resWorkload}-${rgUniqueString}'
+
+var eventHubNamespaceName = 'evh-${resWorkload}-${rgUniqueString}'
 
 module eventgrid './EventGrid.bicep' = {
   name: 'eventgrid'
   params: {
     rgLocation: rgLocation
-    eventGridName: eventGridName
+    eventGridNamespaceName: eventGridNamespaceName
+    eventGridTopicName: eventGridTopicName
     deviceNames: [
       'device01'
       'device02'
@@ -26,16 +36,18 @@ module eventgrid './EventGrid.bicep' = {
   ]
   params: {
     rgLocation: rgLocation
-    eventGridName: eventGridName
-    eventGridNamespaceName: eventgrid.outputs.eventGridNamespaceName
+    eventGridTopicName: eventGridTopicName
+    eventGridNamespaceName: eventGridNamespaceName
  }
 }
 
 module eventhub './EventHub.bicep' = {
   name: 'eventhub'
   params: {
-    eventHubNamespaceName: 'eh-${rgUniqueString}'
+    eventHubNamespaceName: eventHubNamespaceName
     eventHubDeadletterName: 'deadletter'
+    eventHubVehicleEventsName: 'vehicleevent'
+    eventHubVehicleStatusName: 'vehiclestatus'
     eventHubSku: 'Standard'
     eventHubLocation: rgLocation
   }
@@ -44,18 +56,23 @@ module eventhub './EventHub.bicep' = {
  module appinsights './AppInsights.bicep' = {
   name: 'appinsights'
    params: {
-     opsname: 'ops-${rgUniqueString}'
-     appinsname: 'appins-${rgUniqueString}'
+     opsname: 'ops-${resWorkload}-${rgUniqueString}'
+     appinsname: 'appi-${resWorkload}-${rgUniqueString}'
      location: rgLocation
    }
  }
 
  module azurefunc './AzureFunction.bicep' = {
-  name: 'azurefunc'
+  name: 'azurefunctions'
+  dependsOn: [
+    eventgrid
+  ]  
   params: {
+     eventGridTopicName: eventGridTopicName
+     eventHubNamespaceName: 'evh-${resWorkload}-${rgUniqueString}'
      appInsightsInstrumentationKey: appinsights.outputs.appInsightsInstrKey
-     appName: 'functions-${rgUniqueString}'
-     appPlanName: 'appplan-${rgUniqueString}'
+     appName: 'func-${resWorkload}-${rgUniqueString}'
+     appPlanName: 'asp-${resWorkload}-${rgUniqueString}'
      location: rgLocation
   }
  }

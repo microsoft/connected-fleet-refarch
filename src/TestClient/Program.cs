@@ -2,12 +2,8 @@
 using MQTTnet.Client;
 using MQTTnet;
 using System.Security.Cryptography.X509Certificates;
-using System;
-using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 
 class Program
@@ -25,7 +21,7 @@ class Program
 
         // Read the x509 certificate path from the environment variable CERT_PATH and set to a default if null
         string x509pem = Environment.GetEnvironmentVariable("CERTS_PATH") == null ? @"../../infra/deployment/TelemetryPlatform/cert-gen/certs/" : Environment.GetEnvironmentVariable("CERTS_PATH");
-        string x509key = Environment.GetEnvironmentVariable("CERTS_PATH") == null ? @"../../infra/deployment/TelemetryPlatform/cert-gen/certs/" : Environment.GetEnvironmentVariable("CERTS_PATH"); 
+        string x509key = Environment.GetEnvironmentVariable("CERTS_PATH") == null ? @"../../infra/deployment/TelemetryPlatform/cert-gen/certs/" : Environment.GetEnvironmentVariable("CERTS_PATH");         
         string[] deviceNames = { "device01", "device02", "device03", "device04", "device05"}; // Add more device names as needed
 
         List<Task> clientTasks = new List<Task>();
@@ -51,14 +47,28 @@ class Program
             .WithTcpServer(hostname, 8883)
             .WithClientId($"{deviceName}-client") // Use a unique client ID for each device
             .WithCredentials($"{deviceName}.mqtt.contoso.com", "")  // use client authentication name in the username
-            .WithTls(new MqttClientOptionsBuilderTlsParameters()
-            {
-                UseTls = true,
-                Certificates = new X509Certificate2Collection(certificate)
-            })
+            .WithTlsOptions(new MqttClientTlsOptionsBuilder()
+                .WithClientCertificates(new X509Certificate2Collection(certificate))
+                .Build())
             .Build());
-
+            
         Console.WriteLine($"Device '{deviceName}': Client Connected: {mqttClient.IsConnected} with CONNACK: {connAck.ResultCode}");
+
+
+        // We start by sending a few events from the sample payloads directory
+        IEnumerable<String> eventEntries = ReadMultiJsonFile($"SamplePayloads/sample_events.json");
+        foreach (string entry in eventEntries)
+        {
+            // Get the current time and serialize it in a string that can be stored in a json file
+            string currentTime = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            
+            // Replace the <replace> placeholder in the json file with the current time
+            string updatedEntry = entry.Replace("<replace>", currentTime);
+            
+            Console.WriteLine($"Device '{deviceName}': Publishing {currentTime}");
+            var puback = await mqttClient.PublishStringAsync($"{deviceName}.mqtt.contoso.com/vehicleevent", updatedEntry);
+            Console.WriteLine(puback.ReasonString);
+        }
 
         IEnumerable<String> entries = ReadMultiJsonFile($"SamplePayloads/{deviceName}.json");
 
@@ -78,7 +88,7 @@ class Program
                 // Replace the <replace> placeholder in the json file with the current time
                 string updatedEntry = entry.Replace("<replace>", currentTime);
                 
-                Console.WriteLine($"Device '{deviceName}': Publishing {updatedEntry}");
+                Console.WriteLine($"Device '{deviceName}': Publishing {currentTime}");
                 var puback = await mqttClient.PublishStringAsync($"{deviceName}.mqtt.contoso.com/vehiclestatus", updatedEntry);
                 Console.WriteLine(puback.ReasonString);
                 await Task.Delay(updateInterval);

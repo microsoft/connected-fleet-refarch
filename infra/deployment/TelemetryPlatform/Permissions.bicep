@@ -2,16 +2,11 @@ param rgLocation string
 
 param eventGridNamespaceName string
 
-param eventGridName string
+param eventGridTopicName string
 
-// Creation of a custom topic
-resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' = {
-  name: eventGridName
-  location: rgLocation
-  properties: {
-    publicNetworkAccess: 'Enabled'
-    inputSchema: 'CloudEventSchemaV1_0'
-  }
+// Get a reference to the custom topic
+resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-preview' existing = {
+  name: eventGridTopicName
 }
 
 
@@ -20,9 +15,7 @@ resource vehicletelemetrycustomtopic 'Microsoft.EventGrid/topics@2024-06-01-prev
 resource eventGridNamespace 'Microsoft.EventGrid/namespaces@2024-06-01-preview' = {
   name: eventGridNamespaceName
   location: rgLocation
-  tags: {
-    environment: 'dev'
-  }
+  
   properties: {
     publicNetworkAccess: 'Enabled'    
     topicSpacesConfiguration: {
