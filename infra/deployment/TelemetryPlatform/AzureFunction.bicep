@@ -183,8 +183,7 @@ resource vehicleEventTopicSubscription 'Microsoft.EventGrid/topics/eventSubscrip
   }
 }
 
-
-// Allow Azure functions to send data to EH in the resource group
+@description('This is the built-in Event Hub Data Sender role. See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#analytics')
 resource eventHubDataSenderRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
   scope: subscription()
   name: '2b629674-e913-4c01-ae53-ef4638d8f975'
