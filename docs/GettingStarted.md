@@ -9,7 +9,6 @@
 - (Optional) A Microsoft Dataverse Environment.
 - (Optional) A Dynamics 365 installation with Field Service.
 
-
 ## Deployment Steps
 
 In the following deployment steps, you will:
@@ -21,15 +20,15 @@ In the following deployment steps, you will:
 
 ### Preparation
 
-- If you don't have an Azure subscription, you can [create a free account](https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account).
+- If you don't have an Azure subscription, you can [create a free account](https://azure.microsoft.com/pricing/purchase-options/azure-account).
 
 - Install the Windows Subsystem for Linux (WSL2) in your Windows computer or use a suitable Linux Distribution such as Ubuntu 22.04 LTS.
 
-- Install dotnet-sdk-8.0. Read [Install .NET on Linux](https://learn.microsoft.com/en-us/dotnet/core/install/linux) and follow the steps for your distro.
+- Install dotnet-sdk-8.0. Read [Install .NET on Linux](https://learn.microsoft.com/dotnet/core/install/linux) and follow the steps for your distro.
 
-- Install [Visual Studio Code](https://visualstudio.microsoft.com/)
+- Install [Visual Studio Code](https://visualstudio.microsoft.com/) in your development computer.
 
-- Make sure you have [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt) installed. Run `az --version` to verify. If it's not installed, run the following command to install it:
+- Make sure you have [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli-linux?pivots=apt) installed. Run `az --version` to verify. If it's not installed, run the following command to install it:
 
 ```bash
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
@@ -53,6 +52,12 @@ code .
   - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep): Bicep language support for Visual Studio Code
   - [Azure Functions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions): quickly create, debug, manage, and deploy serverless apps directly from VS Code
 
+- If you want to run the TestClient as a docker container, ensure that you have docker in your system. You can check if you have docker installed by running
+
+``` bash
+docker --version
+```
+
 ### Deploying the telemetry platform layer
 
 In this step you will:
@@ -75,18 +80,13 @@ chmod 700 generate-client-certificates.sh
 chmod 700 ./cert-gen/certGen.sh
 ```
 
-- Create a test root and intermediate certificate.
+- Create a test root and intermediate certificate for the server, and create the certificates for the test clients.
 
 > [!Warning]
 > Make sure to run this script **only once** to avoid discrepancies between the generated certificates and the configuration files.
 
 ```bash
 ./generate-root-certificate.sh
-```
-
-* Create certificates for the test clients
-
-```bash
 ./generate-client-certificates.sh
 ```
 
@@ -111,7 +111,7 @@ export LOCATION=eastus
 az group create --name ${RG_TELEMETRYPLATFORM} --location ${LOCATION}
 ```
 
-- Execute the main.bicep targeting your telemetry platform resource group
+- Execute the main.bicep targeting your telemetry platform resource group. This step will take around 5 minutes to provision all necessary resources.
 
 ``` bash
 az deployment group create --resource-group ${RG_TELEMETRYPLATFORM}--template-file ./main.bicep 
@@ -153,7 +153,7 @@ az group create --name ${RG_FLEETINTEGRATION} --location ${LOCATION}
 export tpeventhubname=$(az eventhubs namespace list --resource-group ${RG_TELEMETRYPLATFORM} --query "[].name" --output tsv)
 ```
 
-- Execute the main.bicep refering to your resource group and using the event hub namespace from the telemetry platform as an argument.
+- Execute the main.bicep refering to your resource group and using the event hub namespace from the telemetry platform as an argument. This step will take around 15 minutes to provision all necessary resources.
 
 ``` bash
 az deployment group create --resource-group ${RG_FLEETINTEGRATION} --template-file ./main.bicep --parameters evhnsTelemetryPlatformNamespaceName=${tpeventhubname}
@@ -166,7 +166,7 @@ You can try out sending messages and the integration with Azure Data Explorer.
 > [!NOTE]
 > This step requires a Dynamics 365 installation with Field Service. You can skip this step in case you don't have an installation available.
 
-Follow the instructions in [Dataverse Integration](DataverseIntegration.md) to automatically create ```IoT Event``` entities.
+Follow the instructions in [Dataverse Integration](DataverseIntegration.md) to automatically create ```IoT Event``` entities based on vehicle events.
 
 ## Try it out
 
@@ -187,11 +187,11 @@ dotnet build
 To execute, set an environment variable with the MQTT host name and run using dotnet.
 
 ```bash
-export gw_url=$(az eventgrid namespace list --resource-group ${RG_TELEMETRYPLATFORM} --query [].topicSpacesConfiguration.hostname --output tsv)
+export gw_url=$(az eventgrid namespace list --resource-group ${RG_TELEMETRYPLATFORM} --query "[].topicSpacesConfiguration.hostname" --output tsv)
 dotnet run
 ```
 
-If you prefer to use containers, you can build the Test Client in a container using:
+If you prefer to use containers, you can build the Test Client using:
 
 ```bash
 docker build -t test-client-image -f Dockerfile ../..
@@ -208,12 +208,14 @@ docker run -it -e gw_url=${gw_url} --rm test-client-image
 
 ### Monitor the behaviour of the azure functions
 
-You can connect to the azure functions streams from the Portal or using  the following command:
+You can connect to the Azure functions log streams from the Portal or using  the following command:
 
 ```bash
 export tpfunctionapp=$(az functionapp list --query "[].name" --resource-group ${RG_TELEMETRYPLATFORM} --output tsv)
 func azure functionapp logstream ${tpfunctionapp}
 ```
+
+As the vehicle messages are sent to the device, the logstream will show the processing of each message and the routing. It is also possible to test the deadletter event hub by modifying ```src/TestClient/SamplePayloads``` to include a few invalid messages.
 
 ### Visualize the messages in Azure Data Explorer
 

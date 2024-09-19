@@ -88,13 +88,16 @@ After the command succeeds, you can check the functions deployed using the follo
 
 ## Try it out
 
-Use a MQTT Test Client to send Event Data. Event data will be stored in the dataverse as IoT Alerts, and the vehicle asset will be created if necessary.
+Use the MQTT Test Client, described in the [getting started guide](GettingStarted.md) to send event data. Event data will be stored in Dataverse as IoT alerts, and the vehicle asset will be created if necessary.
 
 You can monitor the execution of the function using the following command
 
 ```bash
 func azure functionapp logstream ${fifunctionapp}
 ```
+
+As vehicle events are processed, the logstream will show how the function upsers the IoT device, and creates the IoT Alert.
+
 
 To see the IoT Events in the table
 
