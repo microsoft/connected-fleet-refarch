@@ -2,11 +2,11 @@
 
 Welcome to the Microsoft Connected Fleet Reference Architecture
 
-This sample code implements the concepts described in the [connected fleets reference architecture](https://learn.microsoft.com/azure/architecture/industries/automotive/automotive-connected-fleets)  in the Microsoft Learn website.
+This sample code implements the concepts described in the [automotive messaging, data & analytics](https://learn.microsoft.com/azure/event-grid/mqtt-automotive-connectivity-and-data-solution) and the [connected fleets](https://learn.microsoft.com/azure/architecture/industries/automotive/automotive-connected-fleets) reference architectures  in the Microsoft Learn website.
 
 ![High Level Architecture](./docs/images/high-level-architecture.svg)
 
-The connected fleets reference architecture covers concepts such as:
+These reference architectures cover concepts such as:
 
 - Telemetry platform to communicate to vehicles and devices
 - Fleet integration to harmonize data and route messages to the right services
@@ -18,9 +18,9 @@ The reference architecture also describes several integration points, where 3rd 
 
 ## Available Capabilities
 
-This sample code enables the following functionality
-
 ![High Level Architecture](./docs/images/capabilities-overview.svg)
+
+This sample code showcases the following elements:
 
 1. **Mobility Services Telemetry Platform** - a lightweight sample application to ingest MQTT data from the vehicle, parse and send to the Fleet Integration layer. The functions can be customized to change the processing logic.
 
@@ -28,7 +28,7 @@ This sample code enables the following functionality
 
 1. **Integration with Dataverse, Power Platform and Dynamics 365 Field Service** - Leveraging the out of box entities of D365 Field Service to store IoT Devices, Assets and Alerts for vehicle events.
 
-This sample code provides the following services:
+This sample code contains the follwing capabilities:
 
 - Test client
   - Sample MQTT client that transmits telemetry for 5 test devices with realistic sample data per vehicle
