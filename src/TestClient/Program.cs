@@ -2,12 +2,8 @@
 using MQTTnet.Client;
 using MQTTnet;
 using System.Security.Cryptography.X509Certificates;
-using System;
-using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 
 class Program
@@ -51,13 +47,11 @@ class Program
             .WithTcpServer(hostname, 8883)
             .WithClientId($"{deviceName}-client") // Use a unique client ID for each device
             .WithCredentials($"{deviceName}.mqtt.contoso.com", "")  // use client authentication name in the username
-            .WithTls(new MqttClientOptionsBuilderTlsParameters()
-            {
-                UseTls = true,
-                Certificates = new X509Certificate2Collection(certificate)
-            })
+            .WithTlsOptions(new MqttClientTlsOptionsBuilder()
+                .WithClientCertificates(new X509Certificate2Collection(certificate))
+                .Build())
             .Build());
-
+            
         Console.WriteLine($"Device '{deviceName}': Client Connected: {mqttClient.IsConnected} with CONNACK: {connAck.ResultCode}");
 
         IEnumerable<String> entries = ReadMultiJsonFile($"SamplePayloads/{deviceName}.json");
