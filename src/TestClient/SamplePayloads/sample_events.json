@@ -1,0 +1,186 @@
+[
+    {
+        "type": "UserAlert",
+        "subType": "Breakdown",
+        "driverId": "f10e2821bbbea527ea02200352313bc059445190",
+        "timestamp": "<replace>",
+        "extendedProperties": [
+            {
+                "name": "category",
+                "value": "EDGE_CALCULATED"
+            },
+            {
+                "name": "threshold_value",
+                "value": "0.6"
+            },
+            {
+                "name": "threshold_unit",
+                "value": "g"
+            }
+        ],
+        "eventData": [
+            {
+                "timestamp": "<replace>",
+                "signals": [
+                    {
+                        "signal": "Vehicle.Acceleration.Longitudinal",
+                        "value": "6.123"
+                    },
+                    {
+                        "signal": "Vehicle.Acceleration.Lateral",
+                        "value": "0.351"
+                    },
+                    {
+                        "signal": "Vehicle.Acceleration.Vertical",
+                        "value": "0.123"
+                    },
+                    {
+                        "signal": "Vehicle.Speed",
+                        "value": "57"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Timestamp",
+                        "value": "<replace>"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Latitude",
+                        "value": "52.433734"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Longitude",
+                        "value": "10.778549"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Heading",
+                        "value": "253"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.HorizontalAccuracy",
+                        "value": "8.524"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Altitude",
+                        "value": "16.125"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.VerticalAccuracy",
+                        "value": "12.587"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.GNSSReceiver.FixType",
+                        "value": "THREE_D_SATELLITE_BASED_AUGMENTATION"
+                    },
+                    {
+                        "signal": "AngularVelocity.Roll",
+                        "value": "1.234"
+                    },
+                    {
+                        "signal": "AngularVelocity.Pitch",
+                        "value": "0.567"
+                    },
+                    {
+                        "signal": "AngularVelocity.Yaw",
+                        "value": "0.123"
+                    },
+                    {
+                        "signal": "OBD.RelativeAcceleratorPosition",
+                        "value": "0.0"
+                    },
+                    {
+                        "signal": "OBD.RelativeThrottlePosition",
+                        "value": "97.3"
+                    },
+                    {
+                        "signal": "Body.Lights.DirectionIndicator.Left.IsSignaling",
+                        "value": "false"
+                    },
+                    {
+                        "signal": "Body.Lights.DirectionIndicator.Right.IsSignaling",
+                        "value": "false"
+                    }
+                ]
+            },
+            {
+                "ts": "<replace>",
+                "signals": [
+                    {
+                        "signal": "Vehicle.Acceleration.Longitudinal",
+                        "value": "6.123"
+                    },
+                    {
+                        "signal": "Vehicle.Acceleration.Lateral",
+                        "value": "0.351"
+                    },
+                    {
+                        "signal": "Vehicle.Acceleration.Vertical",
+                        "value": "0.123"
+                    },
+                    {
+                        "signal": "Vehicle.Speed",
+                        "value": "57"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Timestamp",
+                        "value": "<replace>"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Latitude",
+                        "value": "52.433734"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Longitude",
+                        "value": "10.778549"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Heading",
+                        "value": "253"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.HorizontalAccuracy",
+                        "value": "8.524"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.Altitude",
+                        "value": "16.125"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.VerticalAccuracy",
+                        "value": "12.587"
+                    },
+                    {
+                        "signal": "Vehicle.CurrentLocation.GNSSReceiver.FixType",
+                        "value": "THREE_D_SATELLITE_BASED_AUGMENTATION"
+                    },
+                    {
+                        "signal": "AngularVelocity.Roll",
+                        "value": "1.234"
+                    },
+                    {
+                        "signal": "AngularVelocity.Pitch",
+                        "value": "0.567"
+                    },
+                    {
+                        "signal": "AngularVelocity.Yaw",
+                        "value": "0.123"
+                    },
+                    {
+                        "signal": "OBD.RelativeAcceleratorPosition",
+                        "value": "0.0"
+                    },
+                    {
+                        "signal": "OBD.RelativeThrottlePosition",
+                        "value": "97.3"
+                    },
+                    {
+                        "signal": "Body.Lights.DirectionIndicator.Left.IsSignaling",
+                        "value": "false"
+                    },
+                    {
+                        "signal": "Body.Lights.DirectionIndicator.Right.IsSignaling",
+                        "value": "false"
+                    }
+                ]
+            }
+        ]
+    }
+]
