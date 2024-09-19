@@ -2,23 +2,17 @@
 
 ## Pre-requisites
 
+### Overview
+
 - An Azure Subscription with the necessary permissions to create resources and application registrations.
 - A Linux or WSL2 Environment.
 - A GitHub client.
 - Visual Studio Code.
+- (Optional) Docker
 - (Optional) A Microsoft Dataverse Environment.
 - (Optional) A Dynamics 365 installation with Field Service.
 
-## Deployment Steps
-
-In the following deployment steps, you will:
-
-- Install all the necessary pre-requisites
-- Deploy the telemetry platform layer, the fleet integration layer and the required azure functions
-- Test connectivity and visualize results
-- Clean-up resources
-
-### 1. Preparation
+### Preparation
 
 - If you don't have an Azure subscription, you can [create a free account](https://azure.microsoft.com/pricing/purchase-options/azure-account).
 
@@ -58,15 +52,25 @@ code .
 docker --version
 ```
 
-### 2. Deploying the telemetry platform layer
+## Deployment Steps
+
+In the following deployment steps, you will:
+
+- Deploy the telemetry platform layer, the fleet integration layer and the required azure functions
+- Test connectivity and visualize results
+- Clean-up resources
+
+
+
+### 1. Deploying the telemetry platform layer
 
 In this step you will:
 
 - Create the test certificates for the Event Grid MQTT broker and test devices.
-- Deploy all required Telemetry Platform resources to Azure using a biceps script.
-- Register 5 test devices to Event Grid as part of the biceps script
+- Deploy all required Telemetry Platform resources to Azure using a Bicep script.
+- Register 5 test devices to Event Grid as part of the Bicep script
 
-#### Create test certificates
+#### 1.1 Create test certificates
 
 - Change your directory to ```infra/deployment/TelemetryPlatform```
 
@@ -88,7 +92,7 @@ chmod 700 ./cert-gen/certGen.sh
 ./generate-client-certificates.sh
 ```
 
-#### Deploy the telemetry platform using biceps
+#### 1.3 Deploy the telemetry platform using Bicep
 
 - login to your Azure account and select your subscription.
 
@@ -112,10 +116,10 @@ az group create --name ${RG_TELEMETRYPLATFORM} --location ${LOCATION}
 - Execute the main.bicep targeting your telemetry platform resource group. This step will take around 5 minutes to provision all necessary resources.
 
 ``` bash
-az deployment group create --resource-group ${RG_TELEMETRYPLATFORM}--template-file ./main.bicep 
+az deployment group create --resource-group ${RG_TELEMETRYPLATFORM} --template-file ./main.bicep 
 ```
 
-#### Deploy the telemetry platform functions
+#### 1.3 Deploy the telemetry platform functions
 
 * Change directory to ```./src/TelemetryPlatform/Functions```
 
@@ -131,11 +135,11 @@ export tpfunctionapp=$(az functionapp list --query "[].name" --resource-group ${
 func azure functionapp publish ${tpfunctionapp} --dotnet
 ```
 
-### 3. Deploy the fleet integration layer
+### 2. Deploy the fleet integration layer
 
 In this step you will deploy the resources required for the fleet integration layer
 
-#### Execute fleet integration biceps deployment scripts
+#### 2.1 Execute fleet integration Bicep deployment scripts
 
 - Change your directory to ```infra/deployment/FleetIntegration```
 
@@ -159,7 +163,7 @@ az deployment group create --resource-group ${RG_FLEETINTEGRATION} --template-fi
 
 You can try out sending messages and the integration with Azure Data Explorer.
 
-#### Deploy the telemetry platform functions for connection to the dataverse
+#### 2.2 Deploy the telemetry platform functions for connection to the dataverse
 
 > [!NOTE]
 > This step requires a Dynamics 365 installation with Field Service. You can skip this step in case you don't have an installation available.
@@ -196,7 +200,7 @@ docker build -t test-client-image -f Dockerfile ../..
 ```
 
 > [!WARNING] 
-> The image will include the client certificates. This is not intented for production use.
+> The image includes the client certificates. **Don't use these certificates in a production environment.**
 
 Then use the following command to run locally.
 
@@ -204,7 +208,7 @@ Then use the following command to run locally.
 docker run -it -e gw_url=${gw_url} --rm test-client-image
 ```
 
-### Monitor the behaviour of the azure functions
+### Monitor the behaviour of the functions
 
 You can connect to the Azure functions log streams from the Portal or using  the following command:
 

@@ -21,6 +21,8 @@ The setup procedure has 3 main steps:
 
 ## Prerequisites
 
+* A Dynamics 365 environment with Field Service enabled
+* A Dataverse environment associated to the Dynamics environment
 * dotnet installed in the system
 * Azure CLI installed
 * Azure Functions Core Tools CLI installed
