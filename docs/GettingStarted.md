@@ -18,7 +18,7 @@ In the following deployment steps, you will:
 - Test connectivity and visualize results
 - Clean-up resources
 
-### Preparation
+### 1. Preparation
 
 - If you don't have an Azure subscription, you can [create a free account](https://azure.microsoft.com/pricing/purchase-options/azure-account).
 
@@ -58,15 +58,13 @@ code .
 docker --version
 ```
 
-### Deploying the telemetry platform layer
+### 2. Deploying the telemetry platform layer
 
 In this step you will:
 
 - Create the test certificates for the Event Grid MQTT broker and test devices.
 - Deploy all required Telemetry Platform resources to Azure using a biceps script.
 - Register 5 test devices to Event Grid as part of the biceps script
-
-#### Telemetry platform deployment artifacts
 
 #### Create test certificates
 
@@ -133,7 +131,7 @@ export tpfunctionapp=$(az functionapp list --query "[].name" --resource-group ${
 func azure functionapp publish ${tpfunctionapp} --dotnet
 ```
 
-### Deploy the fleet integration layer
+### 3. Deploy the fleet integration layer
 
 In this step you will deploy the resources required for the fleet integration layer
 
