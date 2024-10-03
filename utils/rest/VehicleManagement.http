@@ -1,0 +1,217 @@
+@hostname = https://func-tlp-xqzzofewl5ljk.azurewebsites.net
+@functionCode = <InsertFunctionCodeHere>
+
+# @name CreateVehicle
+
+POST {{hostname}}/api/vehicles?code={{functionCode}}
+Content-Type: application/json
+
+{
+    "vehicleUuid": "pin03",
+    "vehicleMetadata":
+    {
+        "colour": "blue",
+        "modelName": "bx80",
+        "type": "subcompact tractor"    
+    },    
+    "devices":
+    [
+        {
+            "deviceId": "dcm100",
+            "deviceName": "DCM",
+            "deviceSerialNumber": "1234567890",
+            "imei": "12345",
+            "certificateCN": "dcm100.kubota.com",
+            "deviceVersionInformation":
+            {
+                "firmwareVersion": "1.0.0",
+                "softwareVersion": "1.0.0",
+                "hardwareVersion": "1.0.0"
+            }
+        }
+    ],
+    "claims":
+    [
+        {
+            "name": "modelYear", 
+            "values": 
+            [
+                {
+                    "value": "2024"
+                }               
+            ]
+        },
+        {
+            "name": "vehicleType",
+            "values": 
+            [
+                {
+                    "value": "tractor"
+                }
+            ]        
+        }
+    ]    
+}
+    
+###
+
+# @name GetVehicleById
+GET {{hostname}}/api/vehicles/{{CreateVehicle.response.body.vehicleId}}?code={{functionCode}}
+
+###
+
+# @name GetVehicleByUuid
+POST {{hostname}}/api/vehicles/uuid?code={{functionCode}}
+
+{{CreateVehicle.response.body.vehicleUuid}}
+
+###
+
+# @name RollVehicleId
+POST {{hostname}}/api/vehicles/roll?code={{functionCode}}
+
+{{CreateVehicle.response.body.vehicleUuid}}
+
+###
+
+# @name CreateService
+
+POST {{hostname}}/api/services?code={{functionCode}}
+Content-Type: application/json
+
+{
+    "serviceId": "service04",
+    "serviceCode": "L4",
+    "name": "All L4 Functionality",
+    "description": "All L4 Functionality",
+    "serviceDependencies": null,
+    "vehicleDependencies": null,
+    "claims":
+    [
+        {
+            "name": "serviceStartDate", 
+            "values": 
+            [
+                {
+                    "value": "2024-06-01T00:00:00Z"
+                }               
+            ]
+        },
+        {
+            "name": "serviceRegions",
+            "values": 
+            [
+                {
+                    "value": "US"
+                },
+                {
+                    "value": "EU"
+                },
+                {
+                    "value": "APAC"
+                }
+            ]        
+        }
+    ]
+}
+
+###
+
+# @name GetServiceById
+GET {{hostname}}/api/services/{{CreateService.response.body.serviceId}}?code={{functionCode}}
+
+###
+
+# @name CreateUser
+
+POST {{hostname}}/api/users?code={{functionCode}}
+Content-Type: application/json
+
+{
+    "userId": "user100",
+    "firstName": "David",
+    "lastName": "Peterson",
+    "emailAddress": "david.peterson",
+    "claims":
+    [
+        {
+            "name": "userHireDate", 
+            "values": 
+            [
+                {
+                    "value": "2024-01-01T00:00:00Z"
+                }               
+            ]
+        },
+        {
+            "name": "userRegion",
+            "values": 
+            [
+                {
+                    "value": "CAN"
+                }
+            ]        
+        }
+    ]
+}
+
+###
+
+# @name GetUserById
+GET {{hostname}}/api/users/{{CreateUser.response.body.userId}}?code={{functionCode}}
+
+###
+
+# @name AddVehicleUserClaim
+POST {{hostname}}/api/claims/admin/claiminfo?code={{functionCode}}
+Content-Type: application/json
+
+{
+    "VehicleId": "{{CreateVehicle.response.body.vehicleId}}",
+    "UserId": "{{CreateUser.response.body.userId}}",
+    "ServiceId": null,
+    "Claims":
+    [
+        {
+            "name": "role", 
+            "values": 
+            [
+                {
+                    "value": "Owner"
+                }               
+            ]
+        }
+    ]
+}
+
+###
+
+# @name AddVehicleServiceClaim
+POST {{hostname}}/api/claims/admin/claiminfo?code={{functionCode}}
+Content-Type: application/json
+
+{
+    "VehicleId": "{{CreateVehicle.response.body.vehicleId}}",
+    "UserId": null,
+    "ServiceId": "service04",
+    "Claims":
+    [
+        {
+            "name": "L4StartDate", 
+            "values": 
+            [
+                {
+                    "value": "2024-07-08T00:00:00Z"
+                }               
+            ]
+        }
+    ]
+}
+
+###
+
+# @name GetVehicleUserClaim
+GET {{hostname}}/api/claims/{{CreateVehicle.response.body.vehicleId}}/users/user100?code={{functionCode}}
+
+
+###

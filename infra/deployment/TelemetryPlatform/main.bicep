@@ -13,6 +13,8 @@ var eventGridNamespaceName =  'evgns-${resWorkload}-${rgUniqueString}'
 
 var eventHubNamespaceName = 'evh-${resWorkload}-${rgUniqueString}'
 
+var cosmosDbName = 'telemetrydb'
+
 module eventgrid './EventGrid.bicep' = {
   name: 'eventgrid'
   params: {
@@ -76,3 +78,22 @@ module eventhub './EventHub.bicep' = {
      location: rgLocation
   }
  }
+
+ 
+// Create the Cosmos DB account to hold telemetry layer metadata
+module cosmosdb './CosmosDb.bicep' = {
+  name: 'cosmosdb' 
+  params: {
+    accountName: 'cosmos-${rgUniqueString}'
+    containerNames: [
+      'vehicledb'
+      'claimsdb'
+      'servicedb'
+      'userdb'
+    ]
+    databaseName: cosmosDbName
+    primaryRegion: rgLocation 
+    location: rgLocation
+  }
+ }
+
