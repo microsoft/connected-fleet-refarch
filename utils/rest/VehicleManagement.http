@@ -1,5 +1,5 @@
-@hostname = https://func-tlp-xqzzofewl5ljk.azurewebsites.net
-@functionCode = <FunctionKeyGoesHere>
+@hostname = <AzureFunctionEndPoint>
+@functionCode = <AzureFunctionCode>
 
 # @name CreateVehicle
 
@@ -7,21 +7,21 @@ POST {{hostname}}/api/vehicles?code={{functionCode}}
 Content-Type: application/json
 
 {
-    "vehicleUuid": "pin03",
+    "vehicleUuid": "pin02",
     "vehicleMetadata":
     {
         "colour": "blue",
-        "modelName": "bx80",
-        "type": "subcompact tractor"    
+        "modelName": "modelB",
+        "type": "subcompact"    
     },    
     "devices":
     [
         {
-            "deviceId": "dcm100",
+            "deviceId": "dcm102",
             "deviceName": "DCM",
             "deviceSerialNumber": "1234567890",
             "imei": "12345",
-            "certificateCN": "dcm100.mytractorcompany.com",
+            "certificateCN": "dcm102.mycarcompany.com",
             "deviceVersionInformation":
             {
                 "firmwareVersion": "1.0.0",
@@ -46,7 +46,7 @@ Content-Type: application/json
             "values": 
             [
                 {
-                    "value": "tractor"
+                    "value": "EV"
                 }
             ]        
         }

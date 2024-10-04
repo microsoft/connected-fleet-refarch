@@ -22,7 +22,7 @@ public class VehicleManager
 
     public VehicleManager()
     {
-        _cosmosClient = CosmosDbClientFactory.CreateClient(Environment.GetEnvironmentVariable("CosmosDbConnectionString"));
+        _cosmosClient = CosmosDbClientFactory.CreateClient(Environment.GetEnvironmentVariable("CosmosDbConnection__fullyQualifiedNamespace"), new DefaultAzureCredential());
         _database = _cosmosClient.GetDatabase(Environment.GetEnvironmentVariable("VehicleDatabaseId"));
         _container = _database.GetContainer(Environment.GetEnvironmentVariable("VehicleContainerId"));
     }
@@ -129,12 +129,13 @@ public class VehicleManager
 
     private void CreateVehicleInBroker(Vehicle vehicle)
     {
-        ClientSecretCredential credential = new ClientSecretCredential(
-            Environment.GetEnvironmentVariable("TenantId"),
-            Environment.GetEnvironmentVariable("ClientId"),
-            Environment.GetEnvironmentVariable("ClientSecret"));
+        //ClientSecretCredential credential = new ClientSecretCredential(
+        //    Environment.GetEnvironmentVariable("TenantId"),
+        //    Environment.GetEnvironmentVariable("ClientId"),
+        //    Environment.GetEnvironmentVariable("ClientSecret"));
 
-        ArmClient client = new ArmClient(credential);
+        //ArmClient client = new ArmClient(credential);
+        ArmClient client = new ArmClient(new DefaultAzureCredential());
 
         string egResourceId = Environment.GetEnvironmentVariable("EventGridResourceId");
         

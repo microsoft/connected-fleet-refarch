@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ConnectedFleet.CosmosDb;
 using Microsoft.Azure.ConnectedFleet.DataContracts;
 using Microsoft.Azure.Cosmos;
+using Azure.Identity;
 using Validation;
 
 namespace Microsoft.Azure.ConnectedVehicle.Services.ClaimsManagement;
@@ -20,7 +21,7 @@ public class ClaimsProviderStore : IClaimsStore
 
     public ClaimsProviderStore()
     {
-        _cosmosClient = CosmosDbClientFactory.CreateClient(Environment.GetEnvironmentVariable("CosmosDbConnectionString"));
+        _cosmosClient = CosmosDbClientFactory.CreateClient(Environment.GetEnvironmentVariable("CosmosDbConnection__fullyQualifiedNamespace"), new DefaultAzureCredential());
         _database = _cosmosClient.GetDatabase(Environment.GetEnvironmentVariable("ClaimsDatabaseId"));
         _container = _database.GetContainer(Environment.GetEnvironmentVariable("ClaimsContainerId"));
     }

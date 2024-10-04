@@ -1,7 +1,8 @@
 
+param eventGridName string
 param eventGridTopicName string
-
 param eventHubNamespaceName string
+param cosmosDbName string
 
 @description('The name of the function app that you wish to create.')
 param appName string 
@@ -23,6 +24,16 @@ var storageAccountName = 'stg${uniqueString(resourceGroup().id)}'
 // Get the event hub where we will send the data
 resource eventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' existing = {
   name: eventHubNamespaceName
+}
+
+// Get the cosmosb where we will store the data
+resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' existing = {
+  name: cosmosDbName
+}
+
+// Get the cosmosb where we will store the data
+resource eventGrid 'Microsoft.EventGrid/namespaces@2024-06-01-preview' existing = {
+  name: eventGridName
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
@@ -90,6 +101,50 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'EventHubConnection__fullyQualifiedNamespace'
           value: '${eventHubNamespace.name}.servicebus.windows.net'
+        }
+        {
+          name: 'CosmosDbConnection__fullyQualifiedNamespace'
+          value: cosmosDb.properties.documentEndpoint
+        }
+        {
+          name: 'ClaimsContainerId'
+          value: 'claimsdb'
+        }
+        {
+          name: 'ClaimsDatabaseId'
+          value: 'telemetrydb'
+        }      
+        {
+          name: 'EventGridResourceId'
+          value: eventGrid.id
+        }
+        {
+          name: 'ServiceContainerId'
+          value: 'servicedb'
+        }
+        {
+          name: 'ServiceDatabaseId'
+          value: 'telemetrydb'
+        }
+        {
+          name: 'UserContainerId'
+          value: 'userdb'
+        }
+        {
+          name: 'UserDatabaseId'
+          value: 'telemetrydb'
+        }
+        {
+          name: 'ValidationScheme'
+          value: 'SubjectMatchesAuthenticationName'
+        }
+        {
+          name: 'VehicleContainerId'
+          value: 'vehicledb'
+        }
+        {
+          name: 'VehicleDatabaseId'
+          value: 'telemetrydb'
         }
       ]
       ftpsState: 'FtpsOnly'
@@ -183,6 +238,23 @@ resource vehicleEventTopicSubscription 'Microsoft.EventGrid/topics/eventSubscrip
   }
 }
 
+@description('This is the built-in Event Grid Contributor role. See https://learn.microsoft.com/en-ca/azure/role-based-access-control/built-in-roles/integration#eventgrid-contributor')
+resource eventGridContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
+  scope: subscription()
+  name: '	1e241071-0855-49ea-94dc-649edcd759de'
+}
+
+resource egazurefunctionroleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(eventGrid.id, functionApp.id, eventGridContributorRoleDefinition.id)
+  scope: eventGrid
+  properties: {
+    roleDefinitionId: eventGridContributorRoleDefinition.id
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+
 @description('This is the built-in Event Hub Data Sender role. See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#analytics')
 resource eventHubDataSenderRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
   scope: subscription()
@@ -198,3 +270,39 @@ resource azurefunctionroleassignment 'Microsoft.Authorization/roleAssignments@20
     principalType: 'ServicePrincipal'
   }
 }
+
+var roleDefinitionId = guid('sql-role-definition-', functionApp.id, cosmosDb.id)
+var roleAssignmentId = guid(roleDefinitionId, functionApp.id, cosmosDb.id)
+
+resource sqlRoleDefinition 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2021-04-15' = {
+  parent: cosmosDb
+  name: roleDefinitionId
+  properties: {
+    roleName: 'FunctionWriterRole'
+    type: 'CustomRole'
+    assignableScopes: [
+      cosmosDb.id
+    ]
+    permissions: [
+      {
+        dataActions: [
+          'Microsoft.DocumentDB/databaseAccounts/readMetadata'
+          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*'
+          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*'
+        ]
+      }
+    ]
+  }
+}
+
+resource sqlRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2021-04-15' = {
+  parent: cosmosDb
+  name: roleAssignmentId
+  properties: {
+    roleDefinitionId: sqlRoleDefinition.id
+    principalId: functionApp.identity.principalId
+    scope: cosmosDb.id
+  }
+}
+
+

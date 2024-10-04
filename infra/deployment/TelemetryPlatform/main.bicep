@@ -64,27 +64,11 @@ module eventhub './EventHub.bicep' = {
    }
  }
 
- module azurefunc './AzureFunction.bicep' = {
-  name: 'azurefunctions'
-  dependsOn: [
-    eventgrid
-  ]  
-  params: {
-     eventGridTopicName: eventGridTopicName
-     eventHubNamespaceName: 'evh-${resWorkload}-${rgUniqueString}'
-     appInsightsInstrumentationKey: appinsights.outputs.appInsightsInstrKey
-     appName: 'func-${resWorkload}-${rgUniqueString}'
-     appPlanName: 'asp-${resWorkload}-${rgUniqueString}'
-     location: rgLocation
-  }
- }
-
- 
-// Create the Cosmos DB account to hold telemetry layer metadata
+ // Create the Cosmos DB account to hold telemetry layer metadata
 module cosmosdb './CosmosDb.bicep' = {
   name: 'cosmosdb' 
   params: {
-    accountName: 'cosmos-${rgUniqueString}'
+    accountName: 'cosmos-${resWorkload}-${rgUniqueString}'
     containerNames: [
       'vehicledb'
       'claimsdb'
@@ -96,4 +80,24 @@ module cosmosdb './CosmosDb.bicep' = {
     location: rgLocation
   }
  }
+ module azurefunc './AzureFunction.bicep' = {
+  name: 'azurefunctions'
+  dependsOn: [
+    eventgrid
+    cosmosdb
+  ]  
+  params: {
+     eventGridName: eventGridNamespaceName
+     eventGridTopicName: eventGridTopicName
+     cosmosDbName: 'cosmos-${resWorkload}-${rgUniqueString}'
+     eventHubNamespaceName: 'evh-${resWorkload}-${rgUniqueString}'
+     appInsightsInstrumentationKey: appinsights.outputs.appInsightsInstrKey
+     appName: 'func-${resWorkload}-${rgUniqueString}'
+     appPlanName: 'asp-${resWorkload}-${rgUniqueString}'
+     location: rgLocation
+  }
+ }
+
+ 
+
 
